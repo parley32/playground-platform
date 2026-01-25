@@ -51,6 +51,13 @@ func TestListFiles_Recursive(t *testing.T) {
 
 }
 
+func TestListFiles_InvalidDir(t *testing.T) {
+	_, err := fileutil.ListFiles("/definitely/not/a/real/path", false)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+}
+
 func TestGetFileInfo_ValidFile(t *testing.T) {
 	dir := t.TempDir()
 	filePath := filepath.Join(dir, "test.txt")
@@ -75,9 +82,18 @@ func TestGetFileInfo_ValidFile(t *testing.T) {
 	}
 }
 
-func TestListFiles_InvalidDir(t *testing.T) {
-	_, err := fileutil.ListFiles("/definitely/not/a/real/path", false)
+func TestGetFileInfo_Directory(t *testing.T) {
+	dir := t.TempDir()
+
+	_, err := fileutil.GetFileInfo(dir)
 	if err == nil {
-		t.Fatal("expected error, got nil")
+		t.Fatal("expected error for directory path, got nil")
+	}
+}
+
+func TestGetFileInfo_NonExistentFile(t *testing.T) {
+	_, err := fileutil.GetFileInfo("/definitely/not/a/real/file.txt")
+	if err == nil {
+		t.Fatal("expected error for non-existent file, got nil")
 	}
 }
