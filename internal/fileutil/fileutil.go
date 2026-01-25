@@ -3,6 +3,7 @@ package fileutil
 import (
 	"errors"
 	"os"
+	"path/filepath"
 )
 
 type FileInfo struct {
@@ -26,10 +27,36 @@ func GetFileInfo(path string) (*FileInfo, error) {
 	}, nil
 }
 
-func IsRegularFile(path string) (bool, error) {
-	info, err := os.Stat(path)
+func ListFiles(dir string, recursive bool) ([]FileInfo, error) {
+	entries, err := os.ReadDir(dir)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return info.Mode().IsRegular(), nil
+
+	var files []FileInfo
+	for _, e := range entries {
+		fullPath := filepath.Join(dir, e.Name())
+		if e.IsDir() {
+			if recursive {
+				subFiles, err := ListFiles(fullPath, true)
+				if err != nil {
+					continue
+				}
+				files = append(files, subFiles...)
+			}
+			continue
+		}
+
+		info, err := e.Info()
+		if err != nil {
+			continue
+		}
+
+		files = append(files, FileInfo{
+			Path: fullPath,
+			Size: info.Size(),
+		})
+	}
+
+	return files, nil
 }
