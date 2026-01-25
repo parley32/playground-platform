@@ -1,0 +1,10 @@
+# Editor / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Go build artifacts
+bin/
+*.exe
