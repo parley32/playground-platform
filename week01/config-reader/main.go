@@ -45,11 +45,23 @@ func readContent(file *os.File) ([]byte, error) {
 
 func parseNumber(content []byte) (int, error) {
 	result := int(0)
+	isNegative := false
 	for _, char := range content {
 		switch {
 		case unicode.IsSpace(rune(char)):
 			{
 				continue
+			}
+		case result == 0 && rune(char) == '+':
+			{
+
+				isNegative = false
+
+			}
+		case result == 0 && rune(char) == '-':
+			{
+
+				isNegative = true
 			}
 		case unicode.IsDigit(rune(char)):
 			{
@@ -64,6 +76,9 @@ func parseNumber(content []byte) (int, error) {
 				return 0, fmt.Errorf("char %q is not a number", char)
 			}
 		}
+	}
+	if isNegative {
+		result *= -1
 	}
 	return result, nil
 }
