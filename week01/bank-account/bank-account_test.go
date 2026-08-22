@@ -108,19 +108,23 @@ func TestAccountWithdrawal(t *testing.T) {
 }
 
 func TestAccountOwner(t *testing.T) {
-	want := "lachlan"
-	account := Account{accountName: want}
-	got := account.getAccountOwner()
-	if got != want {
-		t.Errorf("account owner function returned = %v, want %v", got, want)
-	}
+	t.Run("returns the accountOwner", func(t *testing.T) {
+		want := "lachlan"
+		account := Account{accountName: want}
+		got := account.getAccountOwner()
+		if got != want {
+			t.Errorf("account owner function returned = %v, want %v", got, want)
+		}
+	})
 }
 
 func TestAccountBalanceCheck(t *testing.T) {
-	want := float64(100)
-	account := Account{accountBalance: want}
-	got := account.checkBalance()
-	if got != want {
-		t.Errorf("account balance function returned = %0.2f, want %0.2f", got, want)
-	}
+	t.Run("returns the account balance", func(t *testing.T) {
+		want := float64(100)
+		account := Account{accountBalance: want}
+		got := account.checkBalance()
+		if got != want {
+			t.Errorf("account balance function returned = %0.2f, want %0.2f", got, want)
+		}
+	})
 }
