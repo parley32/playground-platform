@@ -2,21 +2,28 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 )
 
+const WorkerNumber = 3
+
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("usage: calc <int>...")
-		fmt.Println("usage: calc 2 6 34 -2 55")
+	if err := run(os.Args[1:], os.Stdout); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
 
-	inputArray, err := getArgArray(os.Args[1:])
+func run(input []string, output io.Writer) error {
+	if len(input) < 1 {
+		return fmt.Errorf("Usage: calc <int>...\nExample: calc 2 6 34 -2 55")
+	}
+
+	inputArray, err := parseArgs(input)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 	c := make(chan int)
 	go sum(inputArray[:len(inputArray)/3], c)
@@ -24,11 +31,11 @@ func main() {
 	go sum(inputArray[len(inputArray)/3*2:], c)
 
 	var total int
-	for range 3 {
+	for range WorkerNumber {
 		total += <-c
 	}
-	fmt.Printf("Sum: %d\n", total)
-
+	fmt.Fprintf(output, "Sum: %d\n", total)
+	return nil
 }
 
 func sum(input []int, c chan int) {
@@ -39,12 +46,12 @@ func sum(input []int, c chan int) {
 	c <- total
 }
 
-func getArgArray(stringArray []string) ([]int, error) {
+func parseArgs(stringArray []string) ([]int, error) {
 	var array []int
 	for _, arg := range stringArray {
 		number, err := strconv.Atoi(arg)
 		if err != nil {
-			return nil, fmt.Errorf("the input %v is not a valid number\n", arg)
+			return nil, fmt.Errorf("the input %q is not a valid number", arg)
 		}
 		array = append(array, number)
 	}
