@@ -21,7 +21,7 @@ func addItemToList(file *os.File, name string) (string, error) {
 	if err := storeTodos(&todos); err != nil {
 		return "", err
 	}
-	message := fmt.Sprintf("task number %d: \"%q\" added successfully!\n", item.ID, item.Name)
+	message := fmt.Sprintf("task number %d: %q added successfully!\n", item.ID, item.Name)
 	return message, nil
 }
 

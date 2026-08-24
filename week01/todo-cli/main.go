@@ -23,9 +23,8 @@ type Todo struct {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: go run . <add> <taskName> || <list> || <done> <taskID> || <remove> <taskId>")
-		fmt.Println("example: go run . add \"Add ruleset to Program\"")
-
+		fmt.Println("usage: todo <add> <taskName> || <list> || <done> <taskID> || <remove> <taskId>")
+		fmt.Println("example: todo add \"Add ruleset to Program\"")
 		os.Exit(1)
 	}
 
@@ -46,7 +45,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(success)
+		fmt.Print(success)
 	case cmdRemove:
 		if len(os.Args) != 3 {
 			handleInvalidInput()
@@ -61,7 +60,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(success)
+		fmt.Print(success)
 	case cmdList:
 		if len(os.Args) != 2 {
 			handleInvalidInput()
@@ -76,7 +75,7 @@ func main() {
 			if todo.Completed {
 				mark = "[X]"
 			}
-			fmt.Printf("%d.%v%v\n", todo.ID, mark, todo.Name)
+			fmt.Printf("%d.%v %v\n", todo.ID, mark, todo.Name)
 		}
 	case cmdDone:
 		if len(os.Args) != 3 {
@@ -92,7 +91,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(success)
+		fmt.Print(success)
 	default:
 		handleInvalidInput()
 
@@ -100,6 +99,6 @@ func main() {
 }
 
 func handleInvalidInput() {
-	fmt.Println("usage: go run . <add> <taskName> || <list> || <done | remove> <taskID>")
+	fmt.Println("usage: todo <add> <taskName> || <list> || <done | remove> <taskID>")
 	os.Exit(1)
 }
