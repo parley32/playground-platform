@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"reflect"
 	"sort"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestRun(t *testing.T) {
@@ -67,5 +69,25 @@ func TestRunResults(t *testing.T) {
 
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("run() results = %v, want %v", got, want)
+	}
+}
+
+func TestGetReadyForWorkStopsOnCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	jobs := make(chan int)
+	results := make(chan int, 1)
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		getReadyForWork(ctx, jobs, results)
+	}()
+
+	cancel()
+
+	select {
+	case <-done:
+	case <-time.After(200 * time.Millisecond):
+		t.Fatal("worker did not exit after cancel")
 	}
 }

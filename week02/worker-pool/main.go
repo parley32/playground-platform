@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -20,24 +21,18 @@ func run(input []string, output io.Writer) error {
 	if len(input) != 3 {
 		return fmt.Errorf("Usage: workerPool <workerNumber> <jobsNumber>\nExample: workerPool 3 10")
 	}
-	workerNumber, err := strconv.Atoi(input[1])
+	jobsNumber, err := getJobsCount(input[2])
 	if err != nil {
-		return fmt.Errorf("input %q is not a valid positive number of workers", input[1])
+		return err
 	}
-	if workerNumber < 1 {
-		return fmt.Errorf("input %q is not a valid positive number of workers", input[1])
-	}
-	jobsNumber, err := strconv.Atoi(input[2])
+	workerNumber, err := getWorkerCount(input[1], jobsNumber)
 	if err != nil {
-		return fmt.Errorf("input %q is not a valid positive number of jobs", input[2])
-	}
-	if jobsNumber < 1 {
-		return fmt.Errorf("input %q is not a valid positive number of jobs", input[2])
+		return err
 	}
 
-	if workerNumber > jobsNumber {
-		workerNumber = jobsNumber
-	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	results := make(chan int, jobsNumber)
 	jobs := make(chan int, jobsNumber)
 	var wg sync.WaitGroup
@@ -46,13 +41,20 @@ func run(input []string, output io.Writer) error {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
-			getReadyForWork(id+1, jobs, results)
+			getReadyForWork(ctx, jobs, results)
 		}(i)
 	}
 	for j := range jobsNumber {
 		jobs <- jobsNumber - j
 	}
 	close(jobs)
+
+	go func() {
+		time.Sleep(500 * time.Millisecond)
+		cancel()
+		fmt.Fprintln(output, "Job terminated")
+
+	}()
 
 	go func() {
 		wg.Wait()
@@ -66,13 +68,57 @@ func run(input []string, output io.Writer) error {
 	return nil
 }
 
-func getReadyForWork(i int, jobs <-chan int, results chan int) {
+func getReadyForWork(ctx context.Context, jobs <-chan int, results chan int) {
+
 	for j := range jobs {
-		doJob(i, j, results)
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			doJob(ctx, j, results)
+		}
 	}
 }
 
-func doJob(i int, j int, results chan<- int) {
-	time.Sleep(100 * time.Millisecond)
-	results <- j
+func doJob(ctx context.Context, j int, results chan<- int) {
+	timer := time.NewTimer(100 * time.Millisecond)
+	defer timer.Stop()
+
+	select {
+	case <-ctx.Done():
+		return
+	case <-timer.C:
+	}
+
+	select {
+	case <-ctx.Done():
+		return
+	case results <- j:
+	}
+}
+
+func getWorkerCount(input string, jobCount int) (int, error) {
+	result, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, fmt.Errorf("input %q is not a valid positive number of workers", input)
+	}
+	if result < 1 {
+		return 0, fmt.Errorf("input %q is not a valid positive number of workers", input)
+	}
+
+	if result > jobCount {
+		result = jobCount
+	}
+	return result, nil
+}
+
+func getJobsCount(input string) (int, error) {
+	result, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, fmt.Errorf("input %q is not a valid positive number of jobs", input)
+	}
+	if result < 1 {
+		return 0, fmt.Errorf("input %q is not a valid positive number of jobs", input)
+	}
+	return result, nil
 }
