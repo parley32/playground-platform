@@ -20,10 +20,10 @@ type CreateTaskRequest struct {
 }
 
 type TaskHandler struct {
-	service *TaskService
+	service TaskService
 }
 
-func NewTaskHandler(service *TaskService) *TaskHandler {
+func NewTaskHandler(service TaskService) *TaskHandler {
 	return &TaskHandler{service: service}
 }
 

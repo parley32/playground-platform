@@ -7,15 +7,23 @@ import (
 	"sync"
 )
 
-type TaskService struct {
+type TaskService interface {
+	ListSingleTask(input string) (Task, error)
+	List() ([]Task, error)
+	Add(input string) (Task, error)
+	Delete(input string) error
+	Check(input string) error
+}
+
+type taskService struct {
 	mu sync.Mutex
 }
 
-func NewTaskService() *TaskService {
-	return &TaskService{}
+func NewTaskService() *taskService {
+	return &taskService{}
 }
 
-func (t *TaskService) ListSingleTask(input string) (Task, error) {
+func (t *taskService) ListSingleTask(input string) (Task, error) {
 	ID, err := strconv.Atoi(input)
 	if err != nil {
 		return Task{}, fmt.Errorf("%w: input must be a valid ID, got %q", ErrInvalidID, input)
@@ -36,13 +44,13 @@ func (t *TaskService) ListSingleTask(input string) (Task, error) {
 	return tasks[taskRank], nil
 }
 
-func (t *TaskService) List() ([]Task, error) {
+func (t *taskService) List() ([]Task, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	return getStore()
 }
 
-func (t *TaskService) Add(input string) (Task, error) {
+func (t *taskService) Add(input string) (Task, error) {
 	if len(input) == 0 {
 		return Task{}, fmt.Errorf("%w:input must be a valid string, got %q", ErrInvalidTaskName, input)
 	}
@@ -71,7 +79,7 @@ func newTaskID(tasks []Task) int {
 	return ID
 }
 
-func (t *TaskService) Delete(input string) error {
+func (t *taskService) Delete(input string) error {
 	ID, err := strconv.Atoi(input)
 	if err != nil {
 		return fmt.Errorf("%w:input must be a valid ID, got %q", ErrInvalidID, input)
@@ -93,7 +101,7 @@ func (t *TaskService) Delete(input string) error {
 
 }
 
-func (t *TaskService) Check(input string) error {
+func (t *taskService) Check(input string) error {
 	ID, err := strconv.Atoi(input)
 	if err != nil {
 		return fmt.Errorf("%w:input must be a valid ID, got %q", ErrInvalidID, input)
