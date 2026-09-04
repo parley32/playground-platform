@@ -1,22 +1,19 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 )
 
 func main() {
-	ctx := context.Background()
-	if err := run(ctx, os.Stdout); err != nil {
+	if err := run(); err != nil {
 		fmt.Fprintf(os.Stderr, "server error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func run(ctx context.Context, output io.Writer) error {
+func run() error {
 	mux := &http.ServeMux{}
 
 	taskHandler := NewTaskHandler(NewTaskService(fileStore{}))
