@@ -16,11 +16,12 @@ type TaskService interface {
 }
 
 type taskService struct {
-	mu sync.Mutex
+	mu    sync.Mutex
+	store Store
 }
 
-func NewTaskService() *taskService {
-	return &taskService{}
+func NewTaskService(store Store) *taskService {
+	return &taskService{store: store}
 }
 
 func (t *taskService) ListSingleTask(input string) (Task, error) {
@@ -33,7 +34,7 @@ func (t *taskService) ListSingleTask(input string) (Task, error) {
 	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	tasks, err := getStore()
+	tasks, err := t.store.getStore()
 	if err != nil {
 		return Task{}, err
 	}
@@ -47,7 +48,7 @@ func (t *taskService) ListSingleTask(input string) (Task, error) {
 func (t *taskService) List() ([]Task, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	return getStore()
+	return t.store.getStore()
 }
 
 func (t *taskService) Add(input string) (Task, error) {
@@ -57,12 +58,12 @@ func (t *taskService) Add(input string) (Task, error) {
 
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	tasks, err := getStore()
+	tasks, err := t.store.getStore()
 	if err != nil {
 		return Task{}, err
 	}
 	newTask := Task{ID: newTaskID(tasks), Text: input, Done: false}
-	err = saveStore(append(tasks, newTask))
+	err = t.store.saveStore(append(tasks, newTask))
 	if err != nil {
 		return Task{}, err
 	}
@@ -89,7 +90,7 @@ func (t *taskService) Delete(input string) error {
 	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	tasks, err := getStore()
+	tasks, err := t.store.getStore()
 	if err != nil {
 		return err
 	}
@@ -97,7 +98,7 @@ func (t *taskService) Delete(input string) error {
 	if err != nil {
 		return err
 	}
-	return saveStore(slices.Delete(tasks, taskRank, taskRank+1))
+	return t.store.saveStore(slices.Delete(tasks, taskRank, taskRank+1))
 
 }
 
@@ -111,7 +112,7 @@ func (t *taskService) Check(input string) error {
 	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	tasks, err := getStore()
+	tasks, err := t.store.getStore()
 	if err != nil {
 		return err
 	}
@@ -123,7 +124,7 @@ func (t *taskService) Check(input string) error {
 		return fmt.Errorf("%w:task ID %d: %q is already checked", ErrAlreadyDone, ID, tasks[taskRank].Text)
 	}
 	tasks[taskRank].Done = true
-	return saveStore(tasks)
+	return t.store.saveStore(tasks)
 }
 
 func taskRank(ID int, tasks []Task) (int, error) {

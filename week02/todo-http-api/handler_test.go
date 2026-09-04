@@ -13,6 +13,7 @@ type mockTaskService struct {
 	task  Task
 	tasks []Task
 	err   error
+	store Store
 }
 
 func (m mockTaskService) ListSingleTask(ID string) (Task, error) { return m.task, m.err }

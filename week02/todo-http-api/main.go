@@ -19,7 +19,7 @@ func main() {
 func run(ctx context.Context, output io.Writer) error {
 	mux := &http.ServeMux{}
 
-	taskHandler := NewTaskHandler(NewTaskService())
+	taskHandler := NewTaskHandler(NewTaskService(fileStore{}))
 	mux.HandleFunc("POST /task/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/task/" {
 			http.NotFound(w, r)

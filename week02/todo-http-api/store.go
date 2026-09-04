@@ -13,6 +13,21 @@ type Task struct {
 	Done bool   `json:"done"`
 }
 
+type Store interface {
+	getStore() ([]Task, error)
+	saveStore([]Task) error
+}
+
+type fileStore struct{}
+
+func (fileStore) getStore() ([]Task, error) {
+	return getStore()
+}
+
+func (fileStore) saveStore(tasks []Task) error {
+	return saveStore(tasks)
+}
+
 func getStore() ([]Task, error) {
 	content, err := os.ReadFile(fileName)
 	if os.IsNotExist(err) {
