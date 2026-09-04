@@ -133,5 +133,5 @@ func taskRank(ID int, tasks []Task) (int, error) {
 			return i, nil
 		}
 	}
-	return 0, fmt.Errorf("%w:Could not find task with ID: %q", ErrNotFound, ID)
+	return 0, fmt.Errorf("%w:Could not find task with ID: %d", ErrNotFound, ID)
 }
