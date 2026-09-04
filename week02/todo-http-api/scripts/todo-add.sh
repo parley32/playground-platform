@@ -3,4 +3,4 @@
 curl -X POST \
   -H "Content-Type: application/json" \
   -d "{\"description\":\"$*\"}" \
-  http://localhost:8080/task/blbla/
+  http://localhost:8080/task/
