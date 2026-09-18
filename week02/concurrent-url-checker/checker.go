@@ -6,21 +6,33 @@ import (
 	"strings"
 )
 
-func GetURLList(fileName string) ([]string, error) {
+func getURLList(fileName string) ([]string, error) {
 	content, err := os.ReadFile(fileName)
 	if err != nil {
-		//err reading file
 		return nil, err
 	}
 	newContent := strings.Split(string(content), "\n")
 	for index, url := range newContent {
-		url = strings.TrimSpace(url)
-		if !strings.Contains(url, "://") {
-			url = "https://" + url
-		}
-		newContent[index] = url
+		newContent[index] = strings.TrimSpace(url)
 	}
-	return newContent, nil
+	return purgeEmptyLines(newContent), nil
+}
+
+func purgeEmptyLines(list []string) []string {
+	newList := []string{}
+	for _, item := range list {
+		if item != "" {
+			newList = append(newList, item)
+		}
+	}
+	return newList
+}
+
+func normalizeURL(url string) string {
+	if !strings.Contains(url, "://") {
+		url = "https://" + url
+	}
+	return url
 }
 
 func isValidURL(rawURL string) bool {

@@ -1,5 +1,14 @@
 www.google.com
 www.tribalwars.co.uk  
 
+https://httpstat.us/404
+https://httpbin.org/status/500
+https://httpbin.org/delay/10
+not-a-url
+http://
+://example.com
 
 www.github.com
+
+
+www.fakeAddress.com

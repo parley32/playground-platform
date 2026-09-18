@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
+	"sync"
+	"text/tabwriter"
 )
 
 func main() {
@@ -29,46 +30,55 @@ func run(ctx context.Context) error {
 		return errors.New("max 20 workers allowed")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	urlList, err := GetURLList(flag.Arg(0))
+	urlList, err := getURLList(flag.Arg(0))
 	if err != nil {
-		//file invalid somehow
+		fmt.Println("file invalid somehow")
 		return err
 	}
 
-	for _, url := range urlList {
-		if !isValidURL(url) {
+	jobs := make(chan Job)
+	results := make(chan Result)
+	client := &http.Client{}
+
+	var wg sync.WaitGroup
+	for range *workerFlag {
+		wg.Add(1)
+		go startWorker(ctx, jobs, results, client, &wg)
+	}
+
+	go func() {
+		for _, url := range urlList {
+			jobs <- Job{URL: normalizeURL(url)}
+		}
+		close(jobs)
+	}()
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 4, 2, ' ', 0)
+	fmt.Fprintln(w, "URL\tSTATUS\tDURATION\tERROR")
+	fmt.Fprintln(w, "-----------------------------------\t\t\t")
+
+	for result := range results {
+		if result.Err != nil {
+			fmt.Fprintf(w, "%s\t-\t%s\t%v\n",
+				result.URL,
+				result.Duration,
+				result.Err,
+			)
 			continue
 		}
-		req, err := http.NewRequestWithContext(
-			ctx,
-			http.MethodGet,
-			url,
-			nil,
+
+		fmt.Fprintf(w, "%s\t%d\t%s\t\n",
+			result.URL,
+			result.StatusCode,
+			result.Duration,
 		)
-		if err != nil {
-			// invalid request / URL
-			fmt.Println("Invalid request")
-			return err
-		}
-
-		client := &http.Client{}
-
-		timePreCall := time.Now()
-		resp, err := client.Do(req)
-		travelTime := time.Since(timePreCall)
-		if err != nil {
-			// request failed or context timed out
-			fmt.Println("Request failed/ timed out")
-			return err
-		}
-
-		fmt.Printf("%s         | Status Code: %d | Travel time: %v\n", url, resp.StatusCode, travelTime.Round(time.Millisecond))
-
-		defer resp.Body.Close()
 	}
+	w.Flush()
 
 	return nil
 }
