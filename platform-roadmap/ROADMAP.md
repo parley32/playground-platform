@@ -44,13 +44,13 @@ Total ≈ 960 h. Recovery: take a lighter week every 6–8 weeks.
 
 Concepts
 - [x] Syntax, types, structs, methods, slices, maps
-- [ ] Interfaces and embedding — _used (TaskService, shapes), not yet understood_
+- [x] Interfaces and embedding — _interfaces explained 2026-09-30; embedding not covered yet_
 - [ ] Error handling (wrapping, `errors.Is/As`, sentinel errors)
 - [ ] Testing (table tests, `go test`, `-race`, `-cover`)
 - [ ] Modules and package layout
 - [ ] Goroutines and channels
-- [ ] Mutexes and `sync` package — _used (mutex sum calculator), not yet understood_
-- [ ] `context` (cancellation, timeouts)
+- [x] Mutexes and `sync` package — _explained 2026-09-30; `RWMutex`, `sync.Once`, `atomic` not covered yet_
+- [x] `context` (cancellation, timeouts) — _cancellation explained 2026-09-30; `WithTimeout` and `ctx` in HTTP calls not covered yet_
 
 Builds
 - [x] A CLI tool (flags, stdin/stdout, exit codes) — `week01/todo-cli`

@@ -13,10 +13,11 @@ Entry format: one-line summary · minimal example · common mistakes · "Seen in
 - [TCP listeners and connections](tcp-listeners-and-connections.md)
 
 ## Go language
-_(none yet)_
+- [Interfaces (and dependency injection)](interfaces.md)
 
 ## Concurrency
-_(none yet)_
+- [Mutexes, data races and WaitGroups](mutexes-and-waitgroups.md)
+- [context: cancellation and timeouts](context-cancellation.md)
 
 ## Databases
 _(none yet)_

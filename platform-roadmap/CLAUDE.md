@@ -111,6 +111,13 @@ When they ask for review (or finish a milestone):
    `context.WithCancel` for shutdown — add it to concepts?"). Write it on yes.
 7. Lessons: append genuinely durable gotchas to `notes/lessons-learned.md`.
 
+## Commits
+
+After every lesson (a concept explained and recorded, or a day logged),
+commit the tracking-file changes yourself without asking. Stage only
+`platform-roadmap/` (and root `CLAUDE.md` if changed) — never the learner's
+project code unless they ask. Use a short message naming the lesson.
+
 ## Concept library rules
 
 - One concept per file, kebab-case name: `concepts/goroutine-leaks.md`.
