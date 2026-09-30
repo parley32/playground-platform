@@ -45,7 +45,7 @@ Total ≈ 960 h. Recovery: take a lighter week every 6–8 weeks.
 Concepts
 - [x] Syntax, types, structs, methods, slices, maps
 - [x] Interfaces and embedding — _interfaces explained 2026-09-30; embedding not covered yet_
-- [ ] Error handling (wrapping, `errors.Is/As`, sentinel errors)
+- [x] Error handling (wrapping, `errors.Is/As`, sentinel errors) — _explained 2026-09-30; custom error types not covered yet_
 - [ ] Testing (table tests, `go test`, `-race`, `-cover`)
 - [ ] Modules and package layout
 - [ ] Goroutines and channels
