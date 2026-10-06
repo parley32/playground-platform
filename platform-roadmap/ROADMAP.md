@@ -47,7 +47,7 @@ Concepts
 - [x] Interfaces and embedding — _interfaces explained 2026-09-30; embedding not covered yet_
 - [x] Error handling (wrapping, `errors.Is/As`, sentinel errors) — _explained 2026-09-30; custom error types not covered yet_
 - [ ] Testing (table tests, `go test`, `-race`, `-cover`)
-- [ ] Modules and package layout
+- [x] Modules and package layout — _explained 2026-10-06; `go get`, `internal/`, workspaces not covered yet_
 - [x] Goroutines and channels — _explained 2026-09-30; `select` patterns, fan-in/out not covered yet_
 - [x] Mutexes and `sync` package — _explained 2026-09-30; `RWMutex`, `sync.Once`, `atomic` not covered yet_
 - [x] `context` (cancellation, timeouts) — _cancellation explained 2026-09-30; `WithTimeout` and `ctx` in HTTP calls not covered yet_
