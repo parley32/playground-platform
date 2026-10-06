@@ -13,4 +13,4 @@ Not stuck, but a comprehension gap: nothing blocking. All Phase 1 concepts are e
 ## Next step
 Pick the next block: finish the Phase 3 TCP server beyond echo (framing, concurrent connections, timeouts; reuses `context`, channels and mutexes) or start Phase 2 (Postgres API). Recommendation: the TCP server first, since it's in flight. Original note: explain it back without notes; the agent writes the concept entry from your explanation.
 ## Background
-Weekly hours are well under the roadmap's 34 h baseline, slowly rising. No day files before 2026-09-30 — see `days/2026-08-19_to_2026-09-25-summary.md`.
+Hours are not tracked (decision 2026-10-06); pace is judged by ticks and day-file dates. No day files before 2026-09-30 — see `days/2026-08-19_to_2026-09-25-summary.md`.

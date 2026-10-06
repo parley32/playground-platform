@@ -8,8 +8,8 @@ language and a low-level stretch (Rust or C++) later.
 **Background:** ~1 year of C at École 42 (pointers, memory, Unix basics), plus
 web development. Go work started 2026-08-19.
 
-**Start date:** 2026-08-19 · **Target:** no fixed date. Timeline follows real
-weekly hours (see "Pacing").
+**Start date:** 2026-08-19 · **Target:** no fixed date. Pace is judged by
+boxes ticked and dates worked (see "Pacing"), not hours.
 
 **How progress works:** tick a box only when the thing exists and works —
 code runs, tests pass, or you can explain it without notes. Reading about
@@ -20,23 +20,16 @@ leave it unticked with a short note.
 
 ## Pacing
 
-Original plan assumed ~34 h/week. Actual hours have been well under that and
-are rising. Rough effort per phase is below (estimates, to be re-baselined
-after ~2 weeks of logged hours); calendar time = hours ÷ your weekly hours.
+Hours are not tracked. Pace is measured by what gets done and when:
+- **Progress** = ticked boxes per phase.
+- **Rhythm** = dates of the day files in `days/` (days worked, gaps, streaks).
+- **Relative size** of the phases, from lightest to heaviest: 1 (done) < 2 <
+  7 ≈ 8 < 3 < 6 < 4 ≈ 5 < 9. Expect Phases 3–5 and the flagship to take the
+  bulk of the time.
+- After a few phases, the agent compares dates against ticks and says honestly
+  if the plan is running long or short.
 
-| Phase | Est. hours |
-|---|---|
-| 1 Go fluency (remaining) | ~20 |
-| 2 Backend essentials | ~60 |
-| 3 Linux and networking | ~120 |
-| 4 Containers and Kubernetes | ~150 |
-| 5 Infrastructure software builds | ~150 |
-| 6 IaC, CI/CD, cloud | ~100 |
-| 7 Observability and reliability | ~80 |
-| 8 Distributed systems | ~80 |
-| 9 Flagship | ~200 |
-
-Total ≈ 960 h. Recovery: take a lighter week every 6–8 weeks.
+Take a lighter week every 6–8 weeks.
 
 ---
 
@@ -181,7 +174,7 @@ Job search:
 
 ---
 
-## Bonus hours priority
+## Extra-time priority
 
 1. Improve existing projects
 2. Read source code
@@ -201,7 +194,7 @@ Solutions Architect or CKA around Phases 4–6, only after hands-on experience.
 
 Adopted 2026-09-30, after a review of the original AI-generated plan and
 current job-market data:
-- Re-baselined capacity to real hours (see "Pacing"); dropped the fixed 10–12 month target.
+- Dropped the fixed 10–12 month target and the 34 h/week assumption; stopped tracking hours (2026-10-06) in favour of ticks and dates (see "Pacing").
 - Understanding pass on Phase 1 before continuing.
 - Retargeted from generic backend/platform to infrastructure software in Go.
 - Linux and networking deepened; Kubernetes moved earlier and made developer-focused (`client-go`, controllers).
@@ -211,6 +204,6 @@ current job-market data:
 
 ## Proposed adjustments (not adopted yet — decide when they come up)
 
-- **Recovery weeks.** A lighter week every 6–8 weeks. Raise around week 6 of steady hours.
+- **Recovery weeks.** A lighter week every 6–8 weeks. Raise around week 6 of steady work.
 - **Phase 3 buffer.** Most ambitious phase; allow it to run long rather than rushing it. Raise if it starts slipping.
 - **Domain choice.** At the Phase 5 checkpoint, decide between infrastructure/platform, systems/OS-adjacent, performance-critical or embedded, and pick Rust or C++ accordingly.

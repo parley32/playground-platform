@@ -1,6 +1,6 @@
 # YYYY-MM-DD
 
-Phase: _ · Hours: _
+Phase: _
 
 ## Plan
 

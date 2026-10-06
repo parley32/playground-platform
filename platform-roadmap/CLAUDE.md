@@ -28,7 +28,7 @@ Project code lives wherever the person keeps it (often a sibling folder or a
   `CLAUDE.md` points here.
 - Work before tracking began is a single backfill file in `days/` named
   `<start>_to_<end>-summary.md`. It is not a real day: ignore it for the
-  "days since last session" gap rule and for hour totals (hours unknown).
+  "days since last session" gap rule and for streaks.
 - Never tick a `ROADMAP.md` box for something the learner used without
   understanding. Leave it unticked with a short note, and offer an
   explain-it-back check.
@@ -57,7 +57,8 @@ coming back after time away should not feel brutal.
 
 ## Planning a day ("plan today", "what should I do today")
 
-1. Ask how many hours they have today if they haven't said.
+1. Ask how big a session they want today (short, normal, long) if they
+   haven't said. Do not ask for or track hours.
 2. Use `STATUS.md` + recent day files. Don't repeat finished work; don't
    silently drop half-finished work.
 3. Create `days/YYYY-MM-DD.md` from the template and fill `## Plan`:
@@ -66,10 +67,10 @@ coming back after time away should not feel brutal.
      to create, a function signature to write, a command to run. This is the
      most important line. If you can't make the first action that small, the
      task is still too big — break it down further.
-   - **Steps** — 3–6 steps, each under ~1 hour. Split anything bigger.
+   - **Steps** — 3–6 steps, each small enough to finish in one sitting. Split anything bigger.
    - **Done means** — a checkable condition (a test passes, `curl` returns X,
      the CLI prints Y). Never "understand Z".
-4. If today's plan doesn't fit their hours, cut scope. No "if time permits".
+4. If today's plan doesn't fit the session size, cut scope. No "if time permits".
 5. Propose, don't interrogate — let them edit the plan conversationally.
 
 ## When they're stuck mid-task
@@ -93,7 +94,6 @@ When they ask for review (or finish a milestone):
 1. Open today's file (or the most recent unlogged one).
 2. Capture what they tell you; ask only for what's missing.
 3. Fill `## Log`:
-   - **Hours** — one number on the `Hours:` line at the top (e.g. `3.5`).
    - **Did** — what actually got done.
    - **Learned** — or `—` if nothing. Don't pad.
    - **Stuck / open** — specific enough to resume cold
@@ -134,8 +134,8 @@ project code unless they ask. Use a short message naming the lesson.
 - Progress = ticked boxes in `ROADMAP.md`. When asked "how far along am I?",
   count them per phase and compare against the timeline, honestly.
 - Stats are derived from day files on request — don't maintain a separate
-  stats file. Examples: total hours per phase (sum `Hours:` lines), most
-  common mistake tags, days since last session, streaks.
+  stats file. Examples: days worked per phase, most common mistake tags, days
+  since last session, streaks. Hours are not tracked.
 
 ## Roadmap drift
 
