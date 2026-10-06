@@ -15,6 +15,7 @@ Entry format: one-line summary · minimal example · common mistakes · "Seen in
 ## Go language
 - [Interfaces (and dependency injection)](interfaces.md)
 - [Modules and packages](modules-and-packages.md)
+- [Testing: table tests, subtests, -race and -cover](testing.md)
 - [Error handling: sentinels, wrapping, Is and As](error-handling.md)
 
 ## Concurrency
