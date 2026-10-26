@@ -21,6 +21,20 @@ doesn't know or care which concrete type it got.
 - **Define the interface where it's used** (the consumer's package), not next
   to the implementation. Optional at small scale.
 
+- **A struct holds data, not behaviour** — fields store state; methods are
+  attached separately with a receiver. What makes a type swappable is the
+  *interface*, not the struct.
+- **Mocks are fake implementations** — `mockStore{tasks []Task}` keeps data in
+  a field instead of a file. Fields you leave out take their zero value (a nil
+  slice), so they aren't "required parameters".
+- **Pointer receivers and interfaces** — if methods use `(m *mockStore)`, only
+  `*mockStore` satisfies the interface, so tests pass `&mockStore{...}`. A
+  method that mutates the mock (`saveStore`) needs a pointer receiver, or it
+  changes a copy.
+- **Unexported methods** — an interface with lowercase methods
+  (`getStore`) can only be implemented inside the same package; the test works
+  because it's in `package main` too.
+
 ## Minimal example
 ```go
 type TaskService interface {
@@ -40,6 +54,8 @@ func (m mockTaskService) List() ([]Task, error) { return m.tasks, m.err }
 - Making an interface for one implementation with no test or swap reason.
 - Huge interfaces: mocks become painful. Prefer small ones.
 - Adding a method to the concrete type and expecting the interface holder to see it.
+- Passing `mockStore{}` (value) when the methods have pointer receivers: won't compile.
+- A mock that can never return an error, so the caller's error paths go untested.
 
 ## Not covered yet
 Embedding (structs and interfaces), type assertions and type switches, the
