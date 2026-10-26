@@ -21,6 +21,20 @@ code the tests execute, not whether they check it.
     right, or whether there are races. Use it to find untested code, not as a
     quality score.
 
+- **Test network code with `net.Pipe`** — an in-memory `net.Conn` pair, no real
+  port. Closing one end makes reads on the other return `io.EOF`.
+- **Assert behaviour, not log output** — logs go to stdout, not the connection,
+  so a reader on the client end never sees them. Check what the peer can
+  observe (e.g. `io.EOF` after an idle timeout), or inject an `io.Writer` for
+  logging if the message itself matters.
+- **Deadlines as a test safety net** — `clientConn.SetReadDeadline(...)` makes a
+  broken server fail the test quickly instead of hanging it.
+- **Avoid `time.Sleep` for synchronisation** — a blocking read already waits;
+  a sleep adds flakiness. Make time injectable (a parameter) so tests can use
+  milliseconds instead of the production value.
+- **A goroutine started by a test should be waited for** (done channel or
+  `WaitGroup`), or it can outlive the test.
+
 ## Minimal example
 ```go
 func TestAdd(t *testing.T) {
