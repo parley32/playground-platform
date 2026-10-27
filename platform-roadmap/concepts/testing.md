@@ -23,6 +23,15 @@ code the tests execute, not whether they check it.
 
 - **Test network code with `net.Pipe`** — an in-memory `net.Conn` pair, no real
   port. Closing one end makes reads on the other return `io.EOF`.
+- **`net.Pipe` is not real TCP** — `SetReadDeadline` on an already-closed pipe
+  returns an error, whereas on real TCP it succeeds and the next read returns
+  `io.EOF`. A test that closes the peer immediately can therefore take a
+  different code path from run to run (seen: 2 of 12 runs hit the EOF branch).
+  For a deterministic "peer closed while we were reading" test, use a loopback
+  listener (`net.Listen("tcp", "127.0.0.1:0")` + `net.Dial`).
+- **Check a test can fail** — temporarily remove the code under test (or the
+  action it reacts to) and confirm the test fails; a test that passes anyway
+  is passing for the wrong reason.
 - **Assert behaviour, not log output** — logs go to stdout, not the connection,
   so a reader on the client end never sees them. Check what the peer can
   observe (e.g. `io.EOF` after an idle timeout), or inject an `io.Writer` for
