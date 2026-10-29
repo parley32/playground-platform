@@ -43,6 +43,23 @@ code the tests execute, not whether they check it.
   milliseconds instead of the production value.
 - **A goroutine started by a test should be waited for** (done channel or
   `WaitGroup`), or it can outlive the test.
+- **Never `t.Fatal`/`FailNow` from a goroutine you started** — it ends only that
+  goroutine (via `runtime.Goexit`), so a `wg.Done()` after it is skipped and
+  `wg.Wait()` hangs until the test times out. Use `t.Errorf` inside goroutines
+  (`go vet` flags the mistake) and `defer wg.Done()`, or `wg.Go` (Go 1.25+),
+  which does the `Add`/`Done` for you. `Fatalf` is fine on the test goroutine.
+- **Test a mutex on the type, not through connections** — N goroutines call
+  `set`/`get` directly, with different keys, then check every value after
+  `wg.Wait()`. Release them together with a `start` channel (`close(start)`)
+  so they collide instead of queueing. Read inside the goroutines too, or the
+  lock in `get` is never exercised.
+- **Mutation-check locks** — remove `Lock` from `set`, then from `get`, and
+  confirm each makes the test fail (`concurrent map writes`, or a data race
+  report under `-race`). A `done` channel closed by an outer goroutine that
+  only *starts* the real one (`go` inside `go`) closes instantly and proves
+  nothing.
+- **Table rows get a fresh fixture** — build the store inside `t.Run`, seed it
+  from optional row fields, and assert through the public methods.
 
 ## Minimal example
 ```go
