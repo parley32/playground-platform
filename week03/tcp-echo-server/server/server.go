@@ -2,26 +2,36 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"net"
 	"os"
+	"os/signal"
+	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
 const idleTimeout = 30 * time.Second
+const bufferSize = 4096
 
 type ServerValues interface {
 	getTimeOut() time.Duration
+	getBufferSize() int
 }
 
 type prodValues struct{}
 
 func (prodValues) getTimeOut() time.Duration {
 	return idleTimeout
+}
+
+func (prodValues) getBufferSize() int {
+	return bufferSize
 }
 
 type store struct {
@@ -47,6 +57,9 @@ func (s *store) set(key string, value string) {
 }
 
 func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	ln, err := net.Listen("tcp", "127.0.0.1:8080")
 	if err != nil {
 		fmt.Println("failed to listen:", err)
@@ -56,21 +69,37 @@ func main() {
 	fmt.Println("listening on:", ln.Addr())
 	store := newStore()
 
+	var wg sync.WaitGroup
+
+	go func() {
+		<-ctx.Done()
+		ln.Close()
+	}()
+
 	for {
 		conn, err := ln.Accept()
+		if errors.Is(err, net.ErrClosed) {
+			fmt.Println("server shutting down")
+			break
+		}
 		if err != nil {
 			fmt.Println("connection failed:", err)
-			return
+		} else {
+			wg.Go(func() {
+				handleConn(store, prodValues{}, conn)
+			})
 		}
-		go handleConn(store, prodValues{}, conn)
+
 	}
+	wg.Wait()
+	stop()
 }
 
 func handleConn(s *store, serverValues ServerValues, conn net.Conn) {
 	defer conn.Close()
 	fmt.Println("client connected:", conn.RemoteAddr())
 
-	reader := bufio.NewReader(conn)
+	reader := bufio.NewReaderSize(conn, serverValues.getBufferSize())
 
 	for {
 		err := conn.SetReadDeadline(time.Now().Add(serverValues.getTimeOut()))
@@ -78,7 +107,19 @@ func handleConn(s *store, serverValues ServerValues, conn net.Conn) {
 			fmt.Println("failed to set read deadline:", err)
 			return
 		}
-		line, err := reader.ReadString('\n')
+		line, err := reader.ReadSlice('\n')
+		if errors.Is(err, bufio.ErrBufferFull) {
+			err = loopRead(reader)
+			if err == nil {
+				fmt.Println(conn.RemoteAddr(), " max input size: ", serverValues.getBufferSize())
+				_, err = conn.Write([]byte("ERR max input size: " + strconv.Itoa(serverValues.getBufferSize()) + "\n"))
+				if err != nil {
+					fmt.Println("write error:", err)
+					return
+				}
+				continue
+			}
+		}
 		if err != nil {
 			if errors.Is(err, os.ErrDeadlineExceeded) {
 				fmt.Println("client timed out:", conn.RemoteAddr())
@@ -90,10 +131,19 @@ func handleConn(s *store, serverValues ServerValues, conn net.Conn) {
 			return
 		}
 
-		_, err = conn.Write([]byte(handleCommand(s, line) + "\n"))
+		_, err = conn.Write([]byte(handleCommand(s, string(line)) + "\n"))
 		if err != nil {
 			fmt.Println("write error:", err)
 			return
+		}
+	}
+}
+
+func loopRead(reader *bufio.Reader) error {
+	for {
+		_, err := reader.ReadSlice('\n')
+		if !errors.Is(err, bufio.ErrBufferFull) {
+			return err
 		}
 	}
 }

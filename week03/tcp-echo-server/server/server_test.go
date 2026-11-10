@@ -12,11 +12,16 @@ import (
 )
 
 type mockValues struct {
-	timeCap time.Duration
+	timeCap    time.Duration
+	bufferSize int
 }
 
 func (m *mockValues) getTimeOut() time.Duration {
 	return m.timeCap * time.Millisecond
+}
+
+func (m *mockValues) getBufferSize() int {
+	return m.bufferSize
 }
 
 func TestTimeout(t *testing.T) {
@@ -31,7 +36,7 @@ func TestTimeout(t *testing.T) {
 		t.Fatalf("test broke: %s", err)
 	}
 
-	go handleConn(store, &mockValues{timeCap: 1}, serverConn)
+	go handleConn(store, &mockValues{timeCap: 1, bufferSize: 4096}, serverConn)
 	_, err = testReader.ReadString('\n')
 	if !errors.Is(err, io.EOF) {
 		t.Fatalf("failed to close connection on timeout: %s", err)
@@ -50,7 +55,7 @@ func TestClientClosure(t *testing.T) {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		handleConn(store, &mockValues{timeCap: 5000}, serverConn)
+		handleConn(store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn)
 	}()
 
 	_, err := clientConn.Write([]byte(sent))
@@ -96,12 +101,12 @@ func TestSharedStore(t *testing.T) {
 
 	go func() {
 		defer close(channel1)
-		handleConn(store, &mockValues{timeCap: 5000}, serverConn)
+		handleConn(store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn)
 	}()
 
 	go func() {
 		defer close(channel2)
-		handleConn(store, &mockValues{timeCap: 5000}, serverConn2)
+		handleConn(store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn2)
 	}()
 
 	_, err := clientConn.Write([]byte(sent1))
@@ -314,4 +319,86 @@ func TestMutex(t *testing.T) {
 			t.Fatalf("Mutex ERR: want %q, got %q", strconv.Itoa(index*2), value)
 		}
 	}
+}
+
+func TestBufferCheck(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "16 bit successful input",
+			input: "ECHO bit string\n",
+			want:  "bit string\n",
+		},
+		{
+			name:  "17 bit buffer overflow input",
+			input: "ECHO bit strings\n",
+			want:  "ERR max input size: 16\n",
+		},
+		{
+			name:  "32 bit buffer overflow input",
+			input: "ECHO bit strings overly longbit\n",
+			want:  "ERR max input size: 16\n",
+		},
+		{
+			name:  "buffer overflow input with tail command",
+			input: "ECHO bit strings overly longbit PING\n",
+			want:  "ERR max input size: 16\n",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			store := newStore()
+			serverConn, clientConn := net.Pipe()
+			defer serverConn.Close()
+			defer clientConn.Close()
+			serverValues := &mockValues{timeCap: 5000, bufferSize: 16}
+			testReader := bufio.NewReaderSize(clientConn, serverValues.getBufferSize())
+
+			shortSent := "ECHO test\n"
+			shortWant := "test\n"
+
+			done := make(chan struct{})
+			go func() {
+				defer close(done)
+				handleConn(store, serverValues, serverConn)
+			}()
+
+			_, err := clientConn.Write([]byte(test.input))
+			if err != nil {
+				t.Fatalf("failed to write to client: %q", err)
+			}
+			received, err := testReader.ReadString('\n')
+			if err != nil {
+				t.Fatalf("server failed to respond: %q", err)
+			}
+			if received != test.want {
+				t.Fatalf("error, got %q, wanted %q", received, test.want)
+			}
+
+			_, err = clientConn.Write([]byte(shortSent))
+			if err != nil {
+				t.Fatalf("failed to write to client: %q", err)
+			}
+			received, err = testReader.ReadString('\n')
+			if err != nil {
+				t.Fatalf("server failed to respond: %q", err)
+			}
+			if received != shortWant {
+				t.Fatalf("error, got %q, wanted %q", received, shortWant)
+			}
+
+			clientConn.Close()
+
+			select {
+			case <-done:
+			case <-time.After(time.Second):
+				t.Fatal("handleConn didnt return as soon as the client closed")
+			}
+		})
+
+	}
+
 }
