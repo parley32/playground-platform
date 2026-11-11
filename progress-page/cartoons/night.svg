@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220">
+<style>
+  .ink { stroke: #2b2b2b; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .anim { transform-box: fill-box; transform-origin: center; }
+
+  .star { animation: twinkle 2.2s ease-in-out infinite; }
+  .star.b { animation-delay: .7s; } .star.c { animation-delay: 1.4s; }
+  @keyframes twinkle { 50% { opacity: .2; } }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .still-show { opacity: 1 !important; } }
+</style>
+<rect x="4" y="4" width="232" height="212" rx="28" fill="#24346e"/>
+<path d="M4 182 H236 V188 a28 28 0 0 1 -28 28 H32 a28 28 0 0 1 -28 -28 Z" fill="#1b2756"/>
+
+<!-- window -->
+<rect class="ink" x="128" y="24" width="84" height="72" rx="8" fill="#e9ecef" stroke-width="3"/>
+<rect x="134" y="30" width="72" height="60" rx="4" fill="#11183a"/>
+<path d="M156 40 a12 12 0 1 0 12 17 a9 9 0 1 1 -12 -17 z" fill="#ffe066"/>
+<path class="anim star" d="M190 42 l1.6 3.2 3.2 1.6 -3.2 1.6 -1.6 3.2 -1.6 -3.2 -3.2 -1.6 3.2 -1.6 z" fill="#fff"/>
+<path class="anim star b" d="M184 72 l1.2 2.4 2.4 1.2 -2.4 1.2 -1.2 2.4 -1.2 -2.4 -2.4 -1.2 2.4 -1.2 z" fill="#fff"/>
+<circle class="anim star c" cx="146" cy="78" r="1.6" fill="#fff"/>
+<path d="M170 30 v60 M134 60 h72" stroke="#e9ecef" stroke-width="3"/>
+<!-- moonlight on the floor -->
+<path d="M134 96 L206 96 L226 182 L150 182 Z" fill="#fff" opacity=".06"/>
+<!-- poster -->
+<rect class="ink" x="30" y="34" width="44" height="56" rx="4" fill="#fff" stroke-width="2.4"/>
+<text x="52" y="58" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#4c6ef5">go</text>
+<text x="52" y="74" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="8" fill="#2b2b2b">run .</text>
+<!-- empty chair pushed in, closed laptop, mug -->
+<rect class="ink" x="88" y="84" width="64" height="62" rx="16" fill="#495057"/>
+<rect class="ink" x="116" y="151" width="8" height="26" fill="#495057"/>
+<path class="ink" d="M98 184 L120 176 L142 184" fill="none" stroke-width="4"/>
+<rect class="ink" x="46" y="150" width="7" height="38" fill="#f8f9fa"/>
+<rect class="ink" x="187" y="150" width="7" height="38" fill="#f8f9fa"/>
+<rect class="ink" x="34" y="142" width="172" height="9" rx="3" fill="#f8f9fa"/>
+<rect class="ink" x="84" y="134" width="72" height="8" rx="3" fill="#ced4da"/>
+<path class="ink" d="M170 123 h16 v14 q0 5 -5 5 h-6 q-5 0 -5 -5 z" fill="#fff"/>
+<path class="ink" d="M186 127 q6 0 6 5 t-6 5" fill="none"/>
+<rect x="4" y="4" width="232" height="212" rx="28" fill="#0b1030" opacity=".25"/>
+
+</svg>
