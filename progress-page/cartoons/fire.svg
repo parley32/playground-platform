@@ -1,10 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-<path d="M140 140q-25-20-10-50q5 15 15 15q-5-30 20-50q-5 25 10 40q10-10 5-25q20 25 5 70z" fill="#ff922b"/>
-<path d="M150 140q-8-12 0-25q5 10 12 8q5 10-2 17z" fill="#ffd43b"/>
-<circle cx="60" cy="45" r="20" fill="#ffe0bd"/>
-<circle cx="53" cy="42" r="3" fill="#2b2b2b"/><circle cx="67" cy="42" r="3" fill="#2b2b2b"/>
-<ellipse cx="60" cy="55" rx="5" ry="4" fill="#fff"/>
-<path d="M60 65v40M60 105l-20 38M60 105l20 38"/>
-<path d="M60 75l-25-25M60 75l25-25"/>
-<path d="M40 20l-6-10M60 15v-10M80 20l6-10" stroke="#e03131"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180">
+<style>
+  .ink { stroke: #2b2b2b; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .fly, .hand, .puff, .drop, .lid, .arc { transform-box: fill-box; transform-origin: center; }
+  .lid { animation: jitter .12s steps(2) infinite; }
+  @keyframes jitter { 0% { transform: translate(-1px, 0); } 100% { transform: translate(1px, 0); } }
+  .hand { animation: tap .14s ease-in-out infinite alternate; }
+  .hand.r { animation-delay: .07s; }
+  @keyframes tap { from { transform: translateY(-5px); } to { transform: translateY(2px); } }
+  .fly { animation: 1.3s ease-out infinite; opacity: 0; }
+  .f1 { animation-name: f1; } .f2 { animation-name: f2; animation-delay: .25s; }
+  .f3 { animation-name: f3; animation-delay: .5s; } .f4 { animation-name: f4; animation-delay: .75s; }
+  .f5 { animation-name: f5; animation-delay: 1s; }
+  @keyframes f1 { 0% { opacity: 0; transform: translate(0,0) rotate(0); } 10% { opacity: 1; } 100% { opacity: 0; transform: translate(-62px,-78px) rotate(-260deg); } }
+  @keyframes f2 { 0% { opacity: 0; transform: translate(0,0) rotate(0); } 10% { opacity: 1; } 100% { opacity: 0; transform: translate(58px,-82px) rotate(300deg); } }
+  @keyframes f3 { 0% { opacity: 0; transform: translate(0,0) rotate(0); } 10% { opacity: 1; } 100% { opacity: 0; transform: translate(-82px,-30px) rotate(-180deg); } }
+  @keyframes f4 { 0% { opacity: 0; transform: translate(0,0) rotate(0); } 10% { opacity: 1; } 100% { opacity: 0; transform: translate(80px,-36px) rotate(220deg); } }
+  @keyframes f5 { 0% { opacity: 0; transform: translate(0,0) rotate(0); } 10% { opacity: 1; } 100% { opacity: 0; transform: translate(46px,-92px) rotate(160deg); } }
+  .puff { animation: puff 1s ease-out infinite; }
+  .puff.b { animation-delay: .5s; }
+  @keyframes puff { from { opacity: .9; transform: translateY(0) scale(.6); } to { opacity: 0; transform: translateY(-18px) scale(1.3); } }
+  .drop { animation: drip .9s ease-in infinite; }
+  .drop.b { animation-delay: .45s; }
+  @keyframes drip { from { opacity: 1; transform: translate(0,0); } to { opacity: 0; transform: translate(6px,14px); } }
+  .arc { animation: blink .2s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .fly { opacity: 1; } }
+</style>
+
+<!-- desk -->
+<rect class="ink" x="8" y="160" width="224" height="9" rx="3" fill="#b08968"/>
+
+<!-- body (hoodie shoulders) -->
+<path class="ink" d="M74 162 C74 118 92 94 120 94 C148 94 166 118 166 162 Z" fill="#4c6ef5"/>
+
+<!-- head -->
+<circle class="ink" cx="120" cy="60" r="32" fill="#ffd7b0"/>
+<!-- spiky hair -->
+<path class="ink" d="M88 58 L84 40 L96 44 L96 26 L108 36 L114 18 L122 32 L132 16 L136 34 L150 24 L146 42 L158 42 L152 58 C146 46 136 42 120 42 C104 42 94 46 88 58 Z" fill="#3d2b1f"/>
+<!-- headphones -->
+<path d="M86 66 C80 18 160 18 154 66" fill="none" stroke="#2b2b2b" stroke-width="8" stroke-linecap="round"/>
+<path d="M86 66 C80 18 160 18 154 66" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round"/>
+<rect class="ink" x="78" y="54" width="14" height="22" rx="6" fill="#fa5252"/>
+<rect class="ink" x="148" y="54" width="14" height="22" rx="6" fill="#fa5252"/>
+<!-- angry brows -->
+<path class="ink" d="M98 44 L114 51 M142 44 L126 51" fill="none" stroke-width="4"/>
+<!-- wide eyes -->
+<circle class="ink" cx="107" cy="60" r="8.5" fill="#fff"/>
+<circle class="ink" cx="133" cy="60" r="8.5" fill="#fff"/>
+<circle cx="107" cy="61" r="2.6" fill="#2b2b2b"/>
+<circle cx="133" cy="61" r="2.6" fill="#2b2b2b"/>
+<!-- gritted teeth -->
+<rect class="ink" x="107" y="73" width="26" height="11" rx="4" fill="#fff"/>
+<path d="M113 73 v11 M120 73 v11 M127 73 v11 M107 78.5 h26" stroke="#2b2b2b" stroke-width="1.6"/>
+<!-- sweat -->
+<path class="ink drop" d="M157 36 q5 8 0 11 q-5 -3 0 -11 z" fill="#74c0fc" stroke-width="2"/>
+<path class="ink drop b" d="M83 40 q5 8 0 11 q-5 -3 0 -11 z" fill="#74c0fc" stroke-width="2"/>
+<!-- steam from the head -->
+<g class="puff"><circle cx="96" cy="14" r="7" fill="#dee2e6"/><circle cx="104" cy="10" r="6" fill="#dee2e6"/></g>
+<g class="puff b"><circle cx="146" cy="12" r="7" fill="#dee2e6"/><circle cx="138" cy="8" r="5" fill="#dee2e6"/></g>
+
+<!-- flying keys (start behind the laptop lid) -->
+<g transform="translate(100 100)"><g class="fly f1"><rect class="ink" x="-9" y="-9" width="18" height="18" rx="4" fill="#fff" stroke-width="2.4"/><text y="5" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" font-weight="700" fill="#2b2b2b">Q</text></g></g>
+<g transform="translate(140 100)"><g class="fly f2"><rect class="ink" x="-9" y="-9" width="18" height="18" rx="4" fill="#fff" stroke-width="2.4"/><text y="5" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" font-weight="700" fill="#2b2b2b">{</text></g></g>
+<g transform="translate(90 104)"><g class="fly f3"><rect class="ink" x="-9" y="-9" width="18" height="18" rx="4" fill="#fff" stroke-width="2.4"/><text y="5" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" font-weight="700" fill="#2b2b2b">;</text></g></g>
+<g transform="translate(150 104)"><g class="fly f4"><rect class="ink" x="-9" y="-9" width="18" height="18" rx="4" fill="#fff" stroke-width="2.4"/><text y="5" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" font-weight="700" fill="#2b2b2b">}</text></g></g>
+<g transform="translate(160 106)"><g class="fly f5"><rect class="ink" x="-9" y="-9" width="18" height="18" rx="4" fill="#fff" stroke-width="2.4"/><text y="5" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" font-weight="700" fill="#2b2b2b">W</text></g></g>
+
+<!-- laptop lid (back side faces us) -->
+<g class="lid">
+  <rect class="ink" x="64" y="98" width="112" height="60" rx="7" fill="#ced4da"/>
+  <rect class="ink" x="56" y="154" width="128" height="7" rx="3" fill="#adb5bd"/>
+  <circle class="ink" cx="120" cy="127" r="11" fill="#fff" stroke-width="2.4"/>
+  <text x="120" y="131" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#4c6ef5">&lt;/&gt;</text>
+  <rect class="ink" x="146" y="138" width="18" height="11" rx="3" fill="#ffd43b" stroke-width="2"/>
+</g>
+
+<!-- blurred typing hands -->
+<ellipse cx="96" cy="94" rx="10" ry="7" fill="#ffd7b0" opacity=".35"/>
+<ellipse cx="144" cy="93" rx="10" ry="7" fill="#ffd7b0" opacity=".35"/>
+<ellipse class="ink hand" cx="96" cy="100" rx="10" ry="7" fill="#ffd7b0"/>
+<ellipse class="ink hand r" cx="144" cy="100" rx="10" ry="7" fill="#ffd7b0"/>
+<!-- motion marks -->
+<path class="ink arc" d="M80 92 q-6 -4 -6 -12 M78 100 h-8 M160 92 q6 -4 6 -12 M162 100 h8" fill="none" stroke-width="2.4"/>
 </svg>

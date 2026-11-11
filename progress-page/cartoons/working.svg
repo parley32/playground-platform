@@ -1,11 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-<rect x="100" y="70" width="70" height="45" rx="4" fill="#dff5e3"/>
-<path d="M110 85h30M110 95h45M110 105h22" stroke="#2f9e44"/>
-<path d="M90 120h95"/>
-<circle cx="55" cy="45" r="20" fill="#ffe0bd"/>
-<path d="M47 42h6M61 42h6"/><path d="M50 54q5 2 10 0"/>
-<path d="M55 65v40M55 105l-12 40M55 105l18 15v25"/>
-<path d="M55 78l35 30M55 80l30 35"/>
-<rect x="35" y="18" width="40" height="10" rx="3" fill="#ffd43b"/>
-<path d="M38 22q17-22 34 0" fill="#ffd43b"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180">
+<style>
+  .ink { stroke: #2b2b2b; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .hand, .note, .steam { transform-box: fill-box; transform-origin: center; }
+  .hand { animation: tap .45s ease-in-out infinite alternate; }
+  .hand.r { animation-delay: .22s; }
+  @keyframes tap { from { transform: translateY(-2px); } to { transform: translateY(1px); } }
+  .note { animation: float 2.4s ease-in-out infinite; opacity: 0; }
+  .note.b { animation-delay: 1.2s; }
+  @keyframes float { 0% { opacity: 0; transform: translate(0,0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(10px,-22px); } }
+  .steam { animation: rise 2s ease-in-out infinite; }
+  @keyframes rise { 0% { opacity: 0; transform: translateY(4px); } 40% { opacity: .9; } 100% { opacity: 0; transform: translateY(-10px); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .note { opacity: 1; } }
+</style>
+
+<rect class="ink" x="8" y="160" width="224" height="9" rx="3" fill="#b08968"/>
+
+<!-- mug on the desk -->
+<path class="ink" d="M196 134 h22 v20 q0 6 -6 6 h-10 q-6 0 -6 -6 z" fill="#fff"/>
+<path class="ink" d="M218 139 q8 0 8 7 t-8 7" fill="none"/>
+<path class="steam" d="M203 128 q-4 -5 0 -10 M211 128 q-4 -5 0 -10" fill="none" stroke="#adb5bd" stroke-width="2.4" stroke-linecap="round"/>
+
+<path class="ink" d="M74 162 C74 118 92 94 120 94 C148 94 166 118 166 162 Z" fill="#4c6ef5"/>
+
+<circle class="ink" cx="120" cy="60" r="32" fill="#ffd7b0"/>
+<!-- messy hair -->
+<path class="ink" d="M88 58 C84 34 102 22 122 24 C144 24 158 40 152 58 C146 46 138 42 128 44 C124 36 112 36 106 44 C98 42 92 48 88 58 Z" fill="#3d2b1f"/>
+<path class="ink" d="M116 25 q-4 -10 4 -14 M126 25 q6 -9 13 -6" fill="none"/>
+<!-- headphones -->
+<path d="M86 66 C80 18 160 18 154 66" fill="none" stroke="#2b2b2b" stroke-width="8" stroke-linecap="round"/>
+<path d="M86 66 C80 18 160 18 154 66" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round"/>
+<rect class="ink" x="78" y="54" width="14" height="22" rx="6" fill="#fa5252"/>
+<rect class="ink" x="148" y="54" width="14" height="22" rx="6" fill="#fa5252"/>
+<!-- focused face -->
+<path class="ink" d="M100 48 l12 3 M140 48 l-12 3" fill="none"/>
+<ellipse class="ink" cx="107" cy="60" rx="6.5" ry="7" fill="#fff"/>
+<ellipse class="ink" cx="133" cy="60" rx="6.5" ry="7" fill="#fff"/>
+<circle cx="107" cy="63" r="3" fill="#2b2b2b"/>
+<circle cx="133" cy="63" r="3" fill="#2b2b2b"/>
+<path class="ink" d="M110 77 q9 6 18 0" fill="none"/>
+<ellipse class="ink" cx="126" cy="81" rx="3.5" ry="4" fill="#ff8787" stroke-width="2"/>
+<!-- music notes from the headphones -->
+<text class="note" x="160" y="44" font-family="sans-serif" font-size="16" fill="#4c6ef5">♪</text>
+<text class="note b" x="66" y="46" font-family="sans-serif" font-size="14" fill="#4c6ef5">♫</text>
+
+<rect class="ink" x="64" y="98" width="112" height="60" rx="7" fill="#ced4da"/>
+<rect class="ink" x="56" y="154" width="128" height="7" rx="3" fill="#adb5bd"/>
+<circle class="ink" cx="120" cy="127" r="11" fill="#fff" stroke-width="2.4"/>
+<text x="120" y="131" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="10" font-weight="700" fill="#4c6ef5">&lt;/&gt;</text>
+<rect class="ink" x="146" y="138" width="18" height="11" rx="3" fill="#ffd43b" stroke-width="2"/>
+
+<ellipse class="ink hand" cx="98" cy="100" rx="10" ry="7" fill="#ffd7b0"/>
+<ellipse class="ink hand r" cx="142" cy="100" rx="10" ry="7" fill="#ffd7b0"/>
 </svg>
