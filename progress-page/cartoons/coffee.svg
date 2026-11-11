@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="80" cy="45" r="20" fill="#ffe0bd"/>
+<path d="M72 44h5M86 44h5"/><path d="M74 55q6 3 12 0"/>
+<path d="M80 65v45M80 110l-15 35M80 110l15 35"/>
+<path d="M80 78l25 10"/>
+<path d="M105 80h22v26q0 6-6 6h-10q-6 0-6-6z" fill="#fff"/>
+<path d="M127 86q10 0 10 8t-10 8"/>
+<path d="M110 70q4-8 0-14M120 70q4-8 0-14" stroke="#999"/>
+<path d="M80 80l-22 18"/>
+<text x="100" y="14" text-anchor="middle" font-family="Comic Sans MS, cursive" font-size="13" fill="#555" stroke="none">5 more minutes...</text>
+</svg>
