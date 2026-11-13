@@ -19,6 +19,13 @@
   header p { margin: 0; color: var(--muted); }
   .demo[hidden] { display: none; }
   .demo { background: #fff3bf; border-radius: 8px; padding: 6px 12px; display: inline-block; margin-top: 10px; font-size: .9rem; }
+  .note-card { margin-top: 24px; background: #fff9db; border: 1px solid #ffe8a1; border-left: 6px solid #fab005;
+    border-radius: 14px; padding: 16px 20px; }
+  .note-card.stale { background: var(--card); border-color: var(--line); border-left-color: #c9c1b1; }
+  .note-card.stale blockquote { color: var(--muted); }
+  .note-meta { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+  .note-card blockquote { margin: 0; font-size: 1.15rem; line-height: 1.45; white-space: pre-line; }
+  .note-card blockquote::before { content: "“"; font-size: 2rem; line-height: 0; vertical-align: -.35em; margin-right: 4px; color: #fab005; }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-top: 28px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
   .card h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 14px; }
@@ -88,6 +95,11 @@
     <p>A live, mildly embarrassing progress report. Updated every time I push code.</p>
     <div class="demo" id="demo" hidden>Showing demo data — the real numbers appear once this is deployed.</div>
   </header>
+
+  <section class="note-card" id="note" hidden>
+    <div class="note-meta" id="note-meta"></div>
+    <blockquote id="note-text"></blockquote>
+  </section>
 
   <div class="grid">
     <section class="card mood">
@@ -191,6 +203,7 @@ function render(data) {
     `<b>${done}</b> of ${items.length} topics done.` + (next ? `<br>Up next: <b>${md(next.label)}</b>` : "<br>All done! 🎉");
 
   drawCurve(data.history);
+  renderNote(data.note);
 
   document.getElementById("roadmap").innerHTML = data.roadmap.map(s => {
     const d = s.items.filter(i => i.done).length;
@@ -213,6 +226,19 @@ function render(data) {
   document.getElementById("mood-img").alt = m.caption;
   document.getElementById("mood-caption").textContent = m.caption;
   document.getElementById("mood-sub").textContent = m.sub;
+}
+
+function renderNote(note) {
+  const box = document.getElementById("note");
+  if (!note || !note.text) { box.hidden = true; return; }
+  box.hidden = false;
+  document.getElementById("note-text").textContent = note.text;
+  const when = note.date ? new Date(note.date) : null;
+  const today = when && parisParts(when).day === parisParts(new Date()).day;
+  const time = when ? when.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: TZ }) : "";
+  box.classList.toggle("stale", !today);
+  document.getElementById("note-meta").textContent =
+    !when ? "Note of the day" : today ? `Today's note · ${time}` : `Last note · ${ago(note.date)}`;
 }
 
 function drawCurve(history) {

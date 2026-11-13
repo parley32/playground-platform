@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 
 ROADMAP = Path("platform-roadmap/ROADMAP.md")
 OUT = Path("progress-page/data.json")
+NOTE = Path("progress-page/note.md")  # the "start of the day" note shown on the page
 MAX_COMMITS = 300  # enough for "today" counts and streaks
 # Commits and the progress curve only count from this day (Toulouse time).
 TRACK_FROM = datetime(2026, 11, 16, tzinfo=ZoneInfo("Europe/Paris"))
@@ -56,10 +57,26 @@ def percent(text):
 
 
 def commits():
-    out = git("log", f"-n{MAX_COMMITS}", "--no-merges", "--format=%h%x1f%cI%x1f%s")
-    rows = [line.split("\x1f") for line in out.splitlines() if line]
-    return [{"hash": h, "date": d, "message": s} for h, d, s in rows
-            if datetime.fromisoformat(d) >= TRACK_FROM]
+    """Recent commits since TRACK_FROM, leaving out commits that only touch the note."""
+    out = git("log", f"-n{MAX_COMMITS}", "--no-merges", "--format=%x1e%h%x1f%cI%x1f%s", "--name-only")
+    result = []
+    for record in out.split("\x1e")[1:]:
+        header, _, files = record.partition("\n")
+        h, d, s = header.split("\x1f")
+        changed = {f for f in files.splitlines() if f.strip()}
+        if changed == {str(NOTE)}:
+            continue
+        if datetime.fromisoformat(d) >= TRACK_FROM:
+            result.append({"hash": h, "date": d, "message": s})
+    return result
+
+
+def note():
+    """The note's text and when it was last committed (None if there is no note)."""
+    if not NOTE.exists() or not NOTE.read_text(encoding="utf-8").strip():
+        return None
+    date = git("log", "-1", "--format=%cI", "--", str(NOTE)).strip()
+    return {"text": NOTE.read_text(encoding="utf-8").strip(), "date": date or None}
 
 
 def history():
@@ -88,6 +105,7 @@ def main():
         "trackFrom": TRACK_FROM.isoformat(),
         "history": history(),
         "commits": commits(),
+        "note": note(),
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, indent=1), encoding="utf-8")
