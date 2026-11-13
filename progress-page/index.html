@@ -26,7 +26,7 @@
 
   /* mood */
   .mood { text-align: center; }
-  .mood img { width: 100%; max-width: 280px; height: auto; }
+  .mood img { width: 100%; height: auto; border-radius: 10px; border: 3px solid #2b2b2b; display: block; }
   .mood .caption { font-size: 1.25rem; font-weight: 600; margin: 8px 0 2px; }
   .mood .sub { color: var(--muted); font-size: .95rem; }
 
@@ -82,7 +82,7 @@
   <div class="grid">
     <section class="card mood">
       <h2>Right now in Toulouse</h2>
-      <img id="mood-img" src="cartoons/gym.svg" alt="">
+      <img id="mood-img" src="cartoons/idle.webp" alt="" width="755" height="498">
       <div class="caption" id="mood-caption"></div>
       <div class="sub" id="mood-sub"></div>
     </section>
@@ -118,12 +118,12 @@ const NAME = "he"; // used in captions — change to "she", "they", or your name
 
 /* ---------- moods: swap the SVGs in cartoons/ for your own drawings ---------- */
 const MOODS = {
-  night:   { img: "night.svg",   caption: "Off duty 🌙",                     sub: "Desk is empty. Probably asleep." },
-  gym:     { img: "gym.svg",     caption: "At the gym instead 🏋️",           sub: "No commits today… yet." },
-  working: { img: "working.svg", caption: "Coding, nice and relaxed 😌",     sub: "" },
-  owl:     { img: "working.svg", caption: "Night owl mode 🦉",               sub: "" },
-  fire:    { img: "fire.svg",    caption: "On fire 🔥",                      sub: "" },
-  gone:    { img: "gym.svg",     caption: `Has ${NAME} given up? 🤔`,        sub: "" },
+  night:   { img: "night.webp",   caption: "Off duty 🌙",                    sub: "Empty chair, cold screen. Probably asleep." },
+  idle:    { img: "idle.webp",    caption: "Out chasing butterflies 🦋",     sub: "No commits today… yet." },
+  working: { img: "working.webp", caption: "Coding, nice and relaxed 😌",    sub: "" },
+  owl:     { img: "working.webp", caption: "Night owl mode 🦉",              sub: "" },
+  fire:    { img: "fire.webp",    caption: "On fire 🔥",                     sub: "" },
+  gone:    { img: "idle.webp",    caption: `Has ${NAME} given up? 🤔`,       sub: "" },
 };
 
 function parisParts(d) {
@@ -140,10 +140,10 @@ function pickMood(commits, now = new Date()) {
   const night = hour >= 22 || hour < 7;
   const plural = n => `${n} commit${n === 1 ? "" : "s"} today`;
 
-  if (daysSince >= 3) return { ...MOODS.gone, sub: last ? `Last commit ${Math.floor(daysSince)} days ago. Maybe the gym won.` : "No commits ever. Suspicious." };
-  if (todays >= 5)    return { ...MOODS.fire, sub: `${plural(todays)}. Keys are flying.` };
+  if (daysSince >= 3) return { ...MOODS.gone, sub: last ? `Last commit ${Math.floor(daysSince)} days ago. The butterflies may have won.` : "No commits ever. Suspicious." };
+  if (todays >= 5)    return { ...MOODS.fire, sub: `${plural(todays)}. Keys and soda are flying.` };
   if (todays >= 1)    return { ...(night ? MOODS.owl : MOODS.working), sub: night ? `${plural(todays)}. Should probably be asleep.` : `${plural(todays)}.` };
-  return night ? MOODS.night : MOODS.gym;
+  return night ? MOODS.night : MOODS.idle;
 }
 
 /* ---------- helpers ---------- */
