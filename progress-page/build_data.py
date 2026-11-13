@@ -10,11 +10,15 @@ other sections are left out.
 import json
 import re
 import subprocess
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROADMAP = Path("platform-roadmap/ROADMAP.md")
 OUT = Path("progress-page/data.json")
 MAX_COMMITS = 300  # enough for "today" counts and streaks
+# Commits and the progress curve only count from this day (Toulouse time).
+TRACK_FROM = datetime(2026, 11, 16, tzinfo=ZoneInfo("Europe/Paris"))
 
 TASK = re.compile(r"^\s*[-*]\s+\[( |x|X)\]\s+(.*)$")
 HEADING = re.compile(r"^##\s+(.*)$")
@@ -54,7 +58,8 @@ def percent(text):
 def commits():
     out = git("log", f"-n{MAX_COMMITS}", "--no-merges", "--format=%h%x1f%cI%x1f%s")
     rows = [line.split("\x1f") for line in out.splitlines() if line]
-    return [{"hash": h, "date": d, "message": s} for h, d, s in rows]
+    return [{"hash": h, "date": d, "message": s} for h, d, s in rows
+            if datetime.fromisoformat(d) >= TRACK_FROM]
 
 
 def history():
@@ -68,7 +73,11 @@ def history():
         except subprocess.CalledProcessError:
             continue  # file deleted/renamed in that commit
         points.append({"date": date, "percent": percent(text)})
-    return points
+    # Everything before TRACK_FROM collapses into one starting point.
+    before = [pt for pt in points if datetime.fromisoformat(pt["date"]) < TRACK_FROM]
+    after = [pt for pt in points if datetime.fromisoformat(pt["date"]) >= TRACK_FROM]
+    start = {"date": TRACK_FROM.isoformat(), "percent": before[-1]["percent"] if before else 0.0}
+    return [start] + after
 
 
 def main():
@@ -76,6 +85,7 @@ def main():
     data = {
         "percent": percent(text),
         "roadmap": parse_roadmap(text),
+        "trackFrom": TRACK_FROM.isoformat(),
         "history": history(),
         "commits": commits(),
     }

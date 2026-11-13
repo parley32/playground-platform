@@ -27,6 +27,16 @@
   /* mood */
   .mood { text-align: center; }
   .mood img { width: 100%; height: auto; border-radius: 10px; border: 3px solid #2b2b2b; display: block; }
+  .mood img.shake { animation: shake 2.4s ease-in-out infinite; }
+  @keyframes shake {
+    0%, 55%, 100% { transform: translate(0, 0) rotate(0); }
+    58% { transform: translate(-4px, 1px) rotate(-1deg); }   61% { transform: translate(4px, -2px) rotate(1deg); }
+    64% { transform: translate(-3px, 2px) rotate(-.6deg); }  67% { transform: translate(5px, 0) rotate(.8deg); }
+    70% { transform: translate(-5px, -1px) rotate(-1.2deg); } 73% { transform: translate(3px, 2px) rotate(.6deg); }
+    76% { transform: translate(-2px, -2px) rotate(-.4deg); } 79% { transform: translate(4px, 1px) rotate(1deg); }
+    82% { transform: translate(-3px, 0) rotate(-.6deg); }   85% { transform: translate(1px, -1px) rotate(.2deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .mood img.shake { animation: none; } }
   .mood .caption { font-size: 1.25rem; font-weight: 600; margin: 8px 0 2px; }
   .mood .sub { color: var(--muted); font-size: .95rem; }
 
@@ -132,21 +142,24 @@ function parisParts(d) {
   return { day: `${p.year}-${p.month}-${p.day}`, hour: +p.hour };
 }
 
-function pickMood(commits, now = new Date()) {
+function pickMood(commits, trackFrom, now = new Date()) {
   const { day: today, hour } = parisParts(now);
   const todays = commits.filter(c => parisParts(new Date(c.date)).day === today).length;
   const last = commits.length ? new Date(commits[0].date) : null;
-  const daysSince = last ? (now - last) / 864e5 : Infinity;
+  // before the first commit, count the quiet days from the tracking start, not forever
+  const daysSince = (now - (last || trackFrom)) / 864e5;
   const night = hour >= 22 || hour < 7;
   const plural = n => `${n} commit${n === 1 ? "" : "s"} today`;
 
-  if (daysSince >= 3) return { ...MOODS.gone, sub: last ? `Last commit ${Math.floor(daysSince)} days ago. The butterflies may have won.` : "No commits ever. Suspicious." };
+  if (now < trackFrom) return { ...(night ? MOODS.night : MOODS.idle), sub: `Tracking starts ${fmtDay(trackFrom)}. Enjoying the calm before.` };
+  if (daysSince >= 3) return { ...MOODS.gone, sub: `${last ? "Last commit" : "Tracking started"} ${Math.floor(daysSince)} days ago. The butterflies may have won.` };
   if (todays >= 5)    return { ...MOODS.fire, sub: `${plural(todays)}. Keys and soda are flying.` };
   if (todays >= 1)    return { ...(night ? MOODS.owl : MOODS.working), sub: night ? `${plural(todays)}. Should probably be asleep.` : `${plural(todays)}.` };
   return night ? MOODS.night : MOODS.idle;
 }
 
 /* ---------- helpers ---------- */
+const fmtDay = d => d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: TZ });
 function ago(date) {
   const s = (Date.now() - new Date(date)) / 1000;
   const units = [["year", 31536e3], ["month", 2592e3], ["week", 604800], ["day", 86400], ["hour", 3600], ["minute", 60]];
@@ -187,13 +200,15 @@ function render(data) {
   }).join("");
 
   const c = data.commits;
+  const trackFrom = new Date(data.trackFrom || 0);
   document.getElementById("stats").innerHTML = c.length
-    ? `<span>Last commit: <b>${ago(c[0].date)}</b></span><span>Streak: <b>${streak(c)} day${streak(c) === 1 ? "" : "s"}</b></span><span>Total shown: <b>${c.length}</b></span>`
-    : "No commits yet.";
+    ? `<span>Last commit: <b>${ago(c[0].date)}</b></span><span>Streak: <b>${streak(c)} day${streak(c) === 1 ? "" : "s"}</b></span><span>Commits since ${fmtDay(trackFrom)}: <b>${c.length}</b></span>`
+    : (Date.now() < trackFrom ? `Tracking starts <b>${fmtDay(trackFrom)}</b>. Check back then!` : `No commits since ${fmtDay(trackFrom)} yet.`);
   document.getElementById("feed").innerHTML = c.slice(0, 50).map(x =>
     `<li><code>${esc(x.hash)}</code><span>${esc(x.message)}</span><time datetime="${x.date}">${ago(x.date)}</time></li>`).join("");
 
-  const m = pickMood(c);
+  const m = pickMood(c, trackFrom);
+  document.getElementById("mood-img").classList.toggle("shake", m.img === "fire.webp");
   document.getElementById("mood-img").src = "cartoons/" + m.img;
   document.getElementById("mood-img").alt = m.caption;
   document.getElementById("mood-caption").textContent = m.caption;
@@ -202,7 +217,9 @@ function render(data) {
 
 function drawCurve(history) {
   const svg = document.getElementById("curve");
-  if (!history || history.length < 2) { svg.style.display = "none"; return; }
+  if (!history || !history.length || Date.now() <= +new Date(history[0].date)) {
+    svg.style.display = "none"; svg.previousElementSibling.style.display = "none"; return;
+  }
   const W = 300, H = 130, pad = 4;
   const t0 = +new Date(history[0].date), t1 = Math.max(Date.now(), +new Date(history.at(-1).date));
   const x = t => pad + (W - 2 * pad) * (t - t0) / (t1 - t0 || 1);
