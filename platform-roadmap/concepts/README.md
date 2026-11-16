@@ -22,6 +22,7 @@ Entry format: one-line summary · minimal example · common mistakes · "Seen in
 - [Mutexes, data races and WaitGroups](mutexes-and-waitgroups.md)
 - [Channels: buffered, unbuffered and closing](channels.md)
 - [context: cancellation and timeouts](context-cancellation.md)
+- [Graceful shutdown (signals, waking blocked reads, WaitGroup)](graceful-shutdown.md)
 
 ## Databases
 _(none yet)_

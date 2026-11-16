@@ -23,6 +23,11 @@ signal to receivers.
   goroutines are asleep - deadlock!").
 - **Counting instead of closing** — `for range n { total += <-c }` works when
   you know exactly how many values will arrive.
+- **Each `<-ch` is a separate receive.** `case <-ch:` throws the value away,
+  and a second `<-ch` in the body waits for the *next* one. Use `case v := <-ch:`.
+- **To `select` on a blocking read**, give the read its own goroutine that
+  sends each line into a channel (and `defer close(ch)` when it stops); then
+  `select` on that channel and the others, checking `v, ok` for the close.
 - **Don't `wg.Wait()` in the receiver before ranging** with an unbuffered
   channel — senders wait on the receiver, the receiver waits on the senders.
 
@@ -53,12 +58,15 @@ for v := range c {
 - Receiver (not sender) closing the channel, or closing while senders remain.
 - `wg.Wait()` in the same goroutine that must receive.
 - Receiving fewer values than were sent on an unbuffered channel (leak).
+- Sending on an unbuffered channel that only the same goroutine receives from (deadlock).
+- Checking `ok` on a channel nothing ever closes, so it's never `false`.
 
 ## Not covered yet
-`select` with multiple channels (partly seen with `ctx.Done()`), nil channels,
+nil channels,
 directional channel types in depth (`<-chan`, `chan<-`), fan-in/fan-out patterns.
 
 ## Seen in
 - `week02/concurrent-channel-sum-calculator` (unbuffered, count receives)
 - `week02/worker-pool` (buffered jobs/results, `close(jobs)`, `close(results)` after `wg.Wait()`)
 - [2026-09-30 day log](../days/2026-09-30.md)
+- `week03/tcp-echo-server/client` (reader goroutine → channel, `select`, `defer close`), [2026-11-16](../days/2026-11-16.md)

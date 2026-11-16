@@ -21,6 +21,13 @@ choose to check it.
   duration; `ctx.Err()` then returns `context.DeadlineExceeded` (vs
   `context.Canceled` for a manual cancel).
 - Pass `ctx` as the first parameter of functions that block or do I/O.
+- **`stop := context.AfterFunc(ctx, f)`** runs `f` in its own goroutine once
+  `ctx` is done, and starts no goroutine before that. `defer stop()` unregisters it
+  when the work ends normally. A hand-written `go func(){ <-ctx.Done(); f() }()`
+  per connection leaks, because `ctx` may only end at shutdown.
+- **`ctx.Err()`** is `nil` until the context is done, and already set when an
+  `AfterFunc` callback runs. Use it to find out *why* an operation failed, for
+  example a read deadline caused by shutdown rather than an idle timeout.
 
 ## Minimal example
 ```go
@@ -41,12 +48,15 @@ case <-time.After(100 * time.Millisecond):
 - `time.Sleep` inside a cancellable worker.
 - Unguarded send or receive on a channel that may never be serviced.
 - Hand-rolling a timeout with `sleep` + `cancel()` instead of `WithTimeout`.
+- A `select` on `ctx.Done()` can't interrupt a call that's already blocked
+  (e.g. `conn.Read`). Wake it from outside (`AfterFunc` + `SetReadDeadline(time.Now())`).
 
 ## Not covered yet
 `WithTimeout`/`WithDeadline` in practice, passing `ctx` into `net/http`
-requests, `context.WithValue`, `ctx.Err()` handling.
+requests, `context.WithValue`.
 
 ## Seen in
 - `week02/worker-pool` (`WithCancel`, `doJob` select)
 - `week02/concurrent-url-checker`
 - [2026-09-30 day log](../days/2026-09-30.md)
+- `week03/tcp-echo-server/server` (`AfterFunc`, `ctx.Err()`), see [graceful shutdown](graceful-shutdown.md), [2026-11-16](../days/2026-11-16.md)
