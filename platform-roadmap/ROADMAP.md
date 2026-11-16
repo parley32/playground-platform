@@ -70,11 +70,11 @@ Builds
 
 Concepts
 - [ ] Processes, threads, scheduling — _in flight: `week03/process-lifecycle`_
-- [ ] Signals, permissions, systemd, logs
+- [ ] Signals, permissions, systemd, logs — _`signal.NotifyContext` for SIGINT/SIGTERM used 2026-11-16; permissions, systemd, logs not covered_
 - [ ] Virtual memory
 - [ ] File descriptors, epoll / I/O models
 - [ ] cgroups and namespaces (what a container actually is)
-- [ ] TCP vs UDP, sockets — _in flight: `week03/tcp-echo-server`_
+- [ ] TCP vs UDP, sockets — _TCP sockets done via `week03/tcp-echo-server` (2026-11-16); UDP not covered yet_
 - [ ] HTTP, DNS, TLS
 - [ ] Load balancing and proxying
 - [ ] Concurrency patterns (pipelines, fan-in/out, worker pools)
@@ -83,7 +83,7 @@ Concepts
 
 Builds
 - [ ] Worker pool with graceful shutdown
-- [ ] TCP server beyond echo (framing, concurrency, timeouts)
+- [x] TCP server beyond echo (framing, concurrency, timeouts) — `week03/tcp-echo-server`, done 2026-11-16 (line protocol + length limit, shared store, idle timeout, graceful shutdown, race-tested)
 - [ ] Rate limiter (token bucket or similar), benchmarked
 - [ ] A tiny container runtime using namespaces and cgroups (Go)
 

@@ -116,7 +116,17 @@ When they ask for review (or finish a milestone):
 After every lesson (a concept explained and recorded, or a day logged),
 commit the tracking-file changes yourself without asking. Stage only
 `platform-roadmap/` (and root `CLAUDE.md` if changed) — never the learner's
-project code unless they ask. Use a short message naming the lesson.
+project code unless they ask.
+
+Messages follow Conventional Commits (`type(scope): summary`, lowercase,
+imperative, no trailing period):
+
+- Lesson or day log → `docs(lesson): <what was learned>`,
+  e.g. `docs(lesson): graceful shutdown with context.AfterFunc (TCP server step 6)`
+- Other tracking-file edits (STATUS, ROADMAP, concepts, these instructions)
+  → `docs(roadmap): <summary>`
+- If asked to commit project code, use the fitting type for the change:
+  `feat`, `fix`, `test`, `refactor`, `chore`.
 
 ## Concept library rules
 

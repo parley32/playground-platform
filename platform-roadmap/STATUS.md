@@ -1,17 +1,18 @@
 # Status
 
-**Updated:** 2026-11-05
-**Phase / week:** Phase 1 complete (all concept and build boxes ticked, understanding pass done 2026-10-06), with an early start on Phase 3 (Linux and networking) material. Roadmap re-planned 2026-09-30 toward infrastructure software in Go.
+**Updated:** 2026-11-16
+**Phase / week:** Phase 1 complete. Phase 3 (Linux and networking) in progress: first Phase 3 build ("TCP server beyond echo") ticked 2026-11-16. Roadmap re-planned 2026-09-30 toward infrastructure software in Go.
 **Project code lives in:** `../week01/`, `../week02/`, `../week03/` (one `go.mod` per week)
 
 ## In flight
-- Phase 3 (Linux and networking): `week03/process-lifecycle` and `week03/tcp-echo-server` (idle timeout, line protocol with `PING`/`ECHO`/`SET`/`GET`, shared mutex-guarded store; steps 1–5 done and race-tested; graceful shutdown left)
+- `week03/tcp-echo-server`: **done** (steps 1–6: line protocol `PING`/`ECHO`/`SET`/`GET`, length limit, mutex-guarded shared store, idle timeout, graceful shutdown via `signal.NotifyContext` + `context.AfterFunc` + `WaitGroup`; client with separate reader/writer goroutines). Race-tested, checked by hand.
+- `week03/process-lifecycle`: started earlier, still open.
 
 ## Stuck on
-Not stuck, but a comprehension gap: nothing blocking. All Phase 1 concepts are explained. Open code follow-ups in `week02/todo-http-api` are listed in `days/2026-09-30.md`. `-race` is already in use with test suites. Still unsure about `-cover` and modules/package layout.
+Nothing blocking. Optional follow-ups for the TCP server are in `days/2026-11-16.md` (helper for the duplicated shutdown notice, client EOF wording, Ctrl+D, untested `EOF` branch). Code follow-ups in `week02/todo-http-api` are still listed in `days/2026-09-30.md`.
 
 ## Next step
-Phase 3 TCP server step 6: graceful shutdown (`signal.NotifyContext`, close the listener on `ctx.Done()`, `WaitGroup` for in-flight connections); see `days/2026-10-06.md`. Optional: loopback-TCP test for the EOF branch. Afterwards: explain what you did without notes; the agent writes the concept entry from your explanation.
+Explain graceful shutdown back without notes; the agent writes the concept entry from that. Then choose: continue `week03/process-lifecycle`, or start the "worker pool with graceful shutdown" build (reuses the shutdown patterns).
 
 ## Background
-Hours are not tracked (decision 2026-10-06); pace is judged by ticks and day-file dates. No day files before 2026-09-30 — see `days/2026-08-19_to_2026-09-25-summary.md`.
+Hours are not tracked (decision 2026-10-06); pace is judged by ticks and day-file dates. No day files before 2026-09-30, see `days/2026-08-19_to_2026-09-25-summary.md`. Second computer: check that `go version` shows 1.27 (PATH order fix, 2026-11-10).
