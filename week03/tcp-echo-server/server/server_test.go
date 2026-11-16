@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"io"
 	"net"
+	"os/signal"
 	"strconv"
 	"sync"
 	"testing"
@@ -24,7 +26,75 @@ func (m *mockValues) getBufferSize() int {
 	return m.bufferSize
 }
 
+func TestGracefulShutdown(t *testing.T) {
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failure to Listen: %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	store := newStore()
+	done := make(chan error)
+
+	go func() {
+		result := serve(ctx, store, ln, &mockValues{timeCap: 30000, bufferSize: 4096})
+		done <- result
+	}()
+
+	conn, err := net.Dial("tcp", ln.Addr().String())
+	if err != nil {
+		t.Fatalf("failed to connect: %v", err)
+	}
+	defer conn.Close()
+
+	testReader := bufio.NewReader(conn)
+
+	sent := "PING\n"
+	want := "PONG\n"
+
+	_, err = conn.Write([]byte(sent))
+	if err != nil {
+		t.Fatalf("failed to write to client: %v", err)
+	}
+	received, err := testReader.ReadString('\n')
+	if err != nil {
+		t.Fatalf("server failed to respond: %v", err)
+	}
+	if received != want {
+		t.Fatalf("error, got %v, wanted %v", received, want)
+	}
+
+	cancel()
+
+	want = "server shutting down, closing connection\n"
+
+	received, err = testReader.ReadString('\n')
+	if err != nil {
+		t.Fatalf("server failed to respond: %v", err)
+	}
+	if received != want {
+		t.Fatalf("error, got %v, wanted %v", received, want)
+	}
+
+	_, err = testReader.ReadString('\n')
+	if !errors.Is(err, io.EOF) {
+		t.Fatalf("server failed to send proper error: %v", err)
+	}
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatalf("server failed with unexpected error")
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatalf("server failed to exit before client idle timeout")
+	}
+
+}
+
 func TestTimeout(t *testing.T) {
+	ctx, stop := signal.NotifyContext(context.Background())
+	defer stop()
 	store := newStore()
 	serverConn, clientConn := net.Pipe()
 	defer serverConn.Close()
@@ -36,7 +106,7 @@ func TestTimeout(t *testing.T) {
 		t.Fatalf("test broke: %s", err)
 	}
 
-	go handleConn(store, &mockValues{timeCap: 1, bufferSize: 4096}, serverConn)
+	go handleConn(ctx, store, &mockValues{timeCap: 1, bufferSize: 4096}, serverConn)
 	_, err = testReader.ReadString('\n')
 	if !errors.Is(err, io.EOF) {
 		t.Fatalf("failed to close connection on timeout: %s", err)
@@ -44,6 +114,8 @@ func TestTimeout(t *testing.T) {
 }
 
 func TestClientClosure(t *testing.T) {
+	ctx, stop := signal.NotifyContext(context.Background())
+	defer stop()
 	store := newStore()
 	serverConn, clientConn := net.Pipe()
 	defer serverConn.Close()
@@ -55,7 +127,7 @@ func TestClientClosure(t *testing.T) {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		handleConn(store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn)
+		handleConn(ctx, store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn)
 	}()
 
 	_, err := clientConn.Write([]byte(sent))
@@ -80,6 +152,8 @@ func TestClientClosure(t *testing.T) {
 }
 
 func TestSharedStore(t *testing.T) {
+	ctx, stop := signal.NotifyContext(context.Background())
+	defer stop()
 	serverConn, clientConn := net.Pipe()
 	defer serverConn.Close()
 	defer clientConn.Close()
@@ -101,12 +175,12 @@ func TestSharedStore(t *testing.T) {
 
 	go func() {
 		defer close(channel1)
-		handleConn(store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn)
+		handleConn(ctx, store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn)
 	}()
 
 	go func() {
 		defer close(channel2)
-		handleConn(store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn2)
+		handleConn(ctx, store, &mockValues{timeCap: 5000, bufferSize: 4096}, serverConn2)
 	}()
 
 	_, err := clientConn.Write([]byte(sent1))
@@ -350,6 +424,8 @@ func TestBufferCheck(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			ctx, stop := signal.NotifyContext(context.Background())
+			defer stop()
 			store := newStore()
 			serverConn, clientConn := net.Pipe()
 			defer serverConn.Close()
@@ -363,7 +439,7 @@ func TestBufferCheck(t *testing.T) {
 			done := make(chan struct{})
 			go func() {
 				defer close(done)
-				handleConn(store, serverValues, serverConn)
+				handleConn(ctx, store, serverValues, serverConn)
 			}()
 
 			_, err := clientConn.Write([]byte(test.input))

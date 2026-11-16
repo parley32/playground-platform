@@ -68,13 +68,17 @@ func main() {
 	defer ln.Close()
 	fmt.Println("listening on:", ln.Addr())
 	store := newStore()
+	serve(ctx, store, ln, prodValues{})
+	stop()
+}
 
+func serve(ctx context.Context, store *store, ln net.Listener, values ServerValues) error {
 	var wg sync.WaitGroup
 
-	go func() {
-		<-ctx.Done()
+	stop := context.AfterFunc(ctx, func() {
 		ln.Close()
-	}()
+	})
+	defer stop()
 
 	for {
 		conn, err := ln.Accept()
@@ -86,13 +90,13 @@ func main() {
 			fmt.Println("connection failed:", err)
 		} else {
 			wg.Go(func() {
-				handleConn(ctx, store, prodValues{}, conn)
+				handleConn(ctx, store, values, conn)
 			})
 		}
 
 	}
 	wg.Wait()
-	stop()
+	return nil
 }
 
 func clientShutdown(conn net.Conn) {
@@ -120,6 +124,10 @@ func handleConn(ctx context.Context, s *store, serverValues ServerValues, conn n
 			fmt.Println("failed to set read deadline:", err)
 			return
 		}
+		if ctx.Err() != nil {
+			setShutdownError(err, conn)
+			return
+		}
 		line, err := reader.ReadSlice('\n')
 		if errors.Is(err, bufio.ErrBufferFull) {
 			err = loopRead(reader)
@@ -134,17 +142,12 @@ func handleConn(ctx context.Context, s *store, serverValues ServerValues, conn n
 			}
 		}
 		if err != nil {
-			if ctx.Err() != nil {
-				fmt.Println("server shutting down, closing connection:", conn.RemoteAddr())
-				_, err = conn.Write([]byte("server shutting down, closing connection\n"))
-				if err != nil {
-					fmt.Println("write error:", err)
-					return
-				}
-				return
-			}
 			if errors.Is(err, os.ErrDeadlineExceeded) {
-				fmt.Println("client timed out:", conn.RemoteAddr())
+				if ctx.Err() != nil {
+					setShutdownError(err, conn)
+				} else {
+					fmt.Println("client timed out:", conn.RemoteAddr())
+				}
 			} else if errors.Is(err, io.EOF) {
 				fmt.Println("client disconnected:", conn.RemoteAddr())
 			} else {
@@ -158,6 +161,14 @@ func handleConn(ctx context.Context, s *store, serverValues ServerValues, conn n
 			fmt.Println("write error:", err)
 			return
 		}
+	}
+}
+
+func setShutdownError(err error, conn net.Conn) {
+	fmt.Println("server shutting down, closing connection:", conn.RemoteAddr())
+	_, err = conn.Write([]byte("server shutting down, closing connection\n"))
+	if err != nil {
+		fmt.Println("write error: ", err)
 	}
 }
 
