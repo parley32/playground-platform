@@ -86,7 +86,7 @@ func main() {
 			fmt.Println("connection failed:", err)
 		} else {
 			wg.Go(func() {
-				handleConn(store, prodValues{}, conn)
+				handleConn(ctx, store, prodValues{}, conn)
 			})
 		}
 
@@ -95,11 +95,24 @@ func main() {
 	stop()
 }
 
-func handleConn(s *store, serverValues ServerValues, conn net.Conn) {
+func clientShutdown(conn net.Conn) {
+	err := conn.SetReadDeadline(time.Now())
+	if err != nil {
+		fmt.Println("failed to set read deadline:", err)
+		return
+	}
+}
+
+func handleConn(ctx context.Context, s *store, serverValues ServerValues, conn net.Conn) {
 	defer conn.Close()
 	fmt.Println("client connected:", conn.RemoteAddr())
 
 	reader := bufio.NewReaderSize(conn, serverValues.getBufferSize())
+
+	stop := context.AfterFunc(ctx, func() {
+		clientShutdown(conn)
+	})
+	defer stop()
 
 	for {
 		err := conn.SetReadDeadline(time.Now().Add(serverValues.getTimeOut()))
@@ -121,6 +134,15 @@ func handleConn(s *store, serverValues ServerValues, conn net.Conn) {
 			}
 		}
 		if err != nil {
+			if ctx.Err() != nil {
+				fmt.Println("server shutting down, closing connection:", conn.RemoteAddr())
+				_, err = conn.Write([]byte("server shutting down, closing connection\n"))
+				if err != nil {
+					fmt.Println("write error:", err)
+					return
+				}
+				return
+			}
 			if errors.Is(err, os.ErrDeadlineExceeded) {
 				fmt.Println("client timed out:", conn.RemoteAddr())
 			} else if errors.Is(err, io.EOF) {
