@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -44,6 +46,10 @@ func main() {
 		defer close(response)
 		for {
 			reply, err := connReader.ReadString('\n')
+			if errors.Is(err, io.EOF) {
+				fmt.Println("server closed the connection")
+				return
+			}
 			if err != nil {
 				fmt.Println("reply error: ", err)
 				return
