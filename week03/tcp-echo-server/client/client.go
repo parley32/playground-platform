@@ -20,24 +20,53 @@ func main() {
 	stdinReader := bufio.NewReader(os.Stdin)
 	connReader := bufio.NewReader(conn)
 
-	for {
-		fmt.Printf("> ")
-		text, err := stdinReader.ReadString('\n')
-		if err != nil {
-			fmt.Println("input reading failed: ", err)
-			return
-		}
-		_, err = conn.Write([]byte(text))
-		if err != nil {
-			fmt.Println("failed to send text to server: ", err)
-			return
-		}
+	responseIsExpected := make(chan bool)
+	response := make(chan string)
 
-		reply, err := connReader.ReadString('\n')
-		if err != nil {
-			fmt.Println("reply error: ", err)
-			return
+	go func() {
+		fmt.Printf("> ")
+		for {
+			text, err := stdinReader.ReadString('\n')
+			if err != nil {
+				fmt.Println("input reading failed: ", err)
+				return
+			}
+			responseIsExpected <- true
+			_, err = conn.Write([]byte(text))
+			if err != nil {
+				fmt.Println("failed to send text to server: ", err)
+				return
+			}
 		}
-		fmt.Print(reply)
+	}()
+
+	go func() {
+		defer close(response)
+		for {
+			reply, err := connReader.ReadString('\n')
+			if err != nil {
+				fmt.Println("reply error: ", err)
+				return
+			}
+			response <- reply
+		}
+	}()
+
+	for {
+		select {
+		case <-responseIsExpected:
+			reply, ok := <-response
+			if !ok {
+				return
+			}
+			fmt.Print("\r\033[K" + reply)
+		case reply, ok := <-response:
+			fmt.Print("\r\033[K" + reply)
+			if !ok {
+				return
+			}
+		}
+		fmt.Printf("> ")
 	}
+
 }
