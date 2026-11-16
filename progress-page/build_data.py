@@ -21,6 +21,22 @@ MAX_COMMITS = 300  # enough for "today" counts and streaks
 # Commits and the progress curve only count from this day (Toulouse time).
 TRACK_FROM = datetime(2026, 11, 16, tzinfo=ZoneInfo("Europe/Paris"))
 
+DATE = re.compile(r"\s*\(?\b\d{4}-\d{2}-\d{2}\b\)?")
+WEEK_DIR = re.compile(r"\bweek\d+/")
+
+
+def clean(text):
+    """Hide when and in which week something happened; keep what and where.
+
+    "explained 2026-09-30; embedding not covered yet" -> "embedding not covered yet"
+    "`week01/todo-cli`" -> "`todo-cli`"
+    """
+    text = WEEK_DIR.sub("", DATE.sub("", text))
+    parts = [p.strip(" ,") for p in text.split(";")]
+    parts = [p for p in parts if p and p.lower() not in {"explained", "done"}]
+    return re.sub(r"\s{2,}", " ", "; ".join(parts)).strip()
+
+
 TASK = re.compile(r"^\s*[-*]\s+\[( |x|X)\]\s+(.*)$")
 HEADING = re.compile(r"^##\s+(.*)$")
 
@@ -44,7 +60,7 @@ def parse_roadmap(text):
         elif current is not None and (m := TASK.match(line)):
             label, _, note = m.group(2).partition(" — ")
             current["items"].append(
-                {"done": m.group(1).lower() == "x", "label": label.strip(), "note": note.strip().strip("_")}
+                {"done": m.group(1).lower() == "x", "label": clean(label), "note": clean(note.strip().strip("_"))}
             )
     return [s for s in sections if s["items"]]
 
