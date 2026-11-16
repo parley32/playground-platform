@@ -1,1 +1,1 @@
-Life is soup, I am fork
+La fiente de la blanche colombe n'atteit pas le fier crapaud
