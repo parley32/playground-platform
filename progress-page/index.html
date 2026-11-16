@@ -485,7 +485,7 @@
       const last = commits.length ? new Date(commits[0].date) : null;
       // before the first commit, count the quiet days from the tracking start, not forever
       const daysSince = (now - (last || trackFrom)) / 864e5;
-      const night = hour >= 19 || hour < 7;
+      const night = hour >= 22 || hour < 7;
       const plural = n => `${n} commit${n === 1 ? "" : "s"} today`;
 
       if (now < trackFrom) return { ...(night ? MOODS.night : MOODS.idle), sub: `Tracking starts ${fmtDay(trackFrom)}. Enjoying the calm before.` };
