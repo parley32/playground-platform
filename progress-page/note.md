@@ -1,1 +1,1 @@
-La fiente de la blanche colombe n'atteit pas le fier crapaud
+Gods be good, I'm about to kick today's booty
