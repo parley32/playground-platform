@@ -67,7 +67,7 @@ func run(ctx context.Context) error {
 	select {
 	case err := <-status:
 		if err != nil {
-			return errors.Join(errors.New("child exit with error: "), err)
+			return fmt.Errorf("child exit with error: %w", err)
 		}
 	case <-ctx.Done():
 		fmt.Println(" -- Interrupted by User")
