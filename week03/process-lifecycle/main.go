@@ -11,6 +11,8 @@ import (
 	"os/signal"
 )
 
+var errUsage = errors.New("usage: lifecycle [--] <command> [args...]")
+
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -18,8 +20,9 @@ func main() {
 	flag.Parse()
 
 	if err := run(ctx); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fmt.Fprintln(os.Stderr, err)
+		statusCode := exitCode(err)
+		os.Exit(statusCode)
 	}
 }
 
@@ -28,7 +31,7 @@ func run(ctx context.Context) error {
 	defer stop()
 
 	if flag.NArg() == 0 {
-		return errors.New("usage: lifecycle [--] <command> [args...]")
+		return errUsage
 	}
 	cmd := exec.Command(flag.Arg(0), flag.Args()[1:]...)
 	err := cmd.Start()
@@ -40,7 +43,7 @@ func run(ctx context.Context) error {
 	go func() {
 		defer close(status)
 
-		err = cmd.Wait()
+		err := cmd.Wait()
 		status <- err
 	}()
 
@@ -62,9 +65,9 @@ func run(ctx context.Context) error {
 	}()
 
 	select {
-	case status := <-status:
-		if status != nil {
-			return fmt.Errorf("child exit with error: %w", err)
+	case err := <-status:
+		if err != nil {
+			return errors.Join(errors.New("child exit with error: "), err)
 		}
 	case <-ctx.Done():
 		fmt.Println(" -- Interrupted by User")
@@ -78,4 +81,21 @@ func run(ctx context.Context) error {
 		return nil
 	}
 	return nil
+}
+
+func exitCode(err error) int {
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		return exitErr.ExitCode()
+	}
+	if errors.Is(err, exec.ErrNotFound) {
+		return 127 // keep exit status code 1 for parent process failure
+	}
+	if errors.Is(err, errUsage) {
+		return 2
+	}
+	if err == nil {
+		return 0
+	}
+	return 1
 }
