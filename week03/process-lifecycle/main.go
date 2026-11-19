@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"flag"
@@ -9,6 +8,9 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"syscall"
+
+	"golang.org/x/term"
 )
 
 var errUsage = errors.New("usage: lifecycle [--] <command> [args...]")
@@ -27,13 +29,23 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	if flag.NArg() == 0 {
 		return errUsage
 	}
 	cmd := exec.Command(flag.Arg(0), flag.Args()[1:]...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Ctty: 0} // verbose 'cause fd 0 is required for Foreground trick to work
+
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	if term.IsTerminal(int(os.Stdin.Fd())) {
+		cmd.SysProcAttr.Foreground = true
+	}
+
 	err := cmd.Start()
 	if err != nil {
 		return fmt.Errorf("start child: %w", err)
@@ -47,22 +59,10 @@ func run(ctx context.Context) error {
 		status <- err
 	}()
 
-	fmt.Println(cmd.Process.Pid)
+	fmt.Fprintln(os.Stderr, cmd.Process.Pid)
 
-	fmt.Printf("Process PID: %d\n", os.Getpid())
-	fmt.Printf("Process PPID: %d\n", os.Getppid())
-
-	input := make(chan []byte, 1)
-
-	go func() {
-		defer close(input)
-
-		result, err := bufio.NewReader(os.Stdin).ReadBytes('\n')
-		if err != nil {
-			return
-		}
-		input <- result
-	}()
+	fmt.Fprintf(os.Stderr, "Process PID: %d\n", os.Getpid())
+	fmt.Fprintf(os.Stderr, "Process PPID: %d\n", os.Getppid())
 
 	select {
 	case err := <-status:
@@ -70,15 +70,19 @@ func run(ctx context.Context) error {
 			return fmt.Errorf("child exit with error: %w", err)
 		}
 	case <-ctx.Done():
-		fmt.Println(" -- Interrupted by User")
-		return nil
-	case result, ok := <-input:
-		if !ok {
-			fmt.Println("User no longer chatty")
-		} else {
-			fmt.Printf("Received: %s", result)
+		cmdErr := syscall.Kill(-cmd.Process.Pid, syscall.SIGTERM)
+		if cmdErr != nil && !errors.Is(cmdErr, syscall.ESRCH) {
+			return fmt.Errorf("failed to signal child process: %w", cmdErr)
 		}
-		return nil
+		fmt.Fprintln(os.Stderr, " -- received signal, stopping child")
+
+		cmdErr = syscall.Kill(-cmd.Process.Pid, syscall.SIGCONT) // negative PID means the whole group, which is nice if the child has more children
+		if cmdErr != nil && !errors.Is(cmdErr, syscall.ESRCH) {
+			return fmt.Errorf("failed to signal child process: %w", cmdErr)
+		}
+		if statusErr := <-status; statusErr != nil {
+			return fmt.Errorf("child exit with error: %w", statusErr)
+		}
 	}
 	return nil
 }
