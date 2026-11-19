@@ -1,1 +1,1 @@
-shortest sad story I've ever read -> For sale: baby basket, unused.
+shortest sad story I've ever read -> For sale: baby's pyjama, unused.
