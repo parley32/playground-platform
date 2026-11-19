@@ -88,8 +88,11 @@ func run(ctx context.Context) error {
 }
 
 func exitCode(err error) int {
-	var exitErr *exec.ExitError
-	if errors.As(err, &exitErr) {
+	if exitErr, ok := errors.AsType[*exec.ExitError](err); ok { // same as declaring a var of type *exec.ExitError, and then checking errors.As on err against that var
+		ws, ok := exitErr.Sys().(syscall.WaitStatus)
+		if ok && ws.Signaled() {
+			return 128 + int(ws.Signal())
+		}
 		return exitErr.ExitCode()
 	}
 	if errors.Is(err, exec.ErrNotFound) {

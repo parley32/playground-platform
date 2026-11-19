@@ -37,6 +37,14 @@ func TestExitCode(t *testing.T) {
 			name: "general error",
 			err:  errors.New("boom"),
 			want: 1,
+		}, {
+			name: "child kills itself :)",
+			err:  exec.Command("sh", "-c", "kill -TERM $$").Run(),
+			want: 143,
+		}, {
+			name: "child kills itself again :)",
+			err:  exec.Command("sh", "-c", "kill -KILL $$").Run(),
+			want: 137,
 		},
 	}
 
