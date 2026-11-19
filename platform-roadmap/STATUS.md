@@ -6,7 +6,7 @@
 
 ## In flight
 - `week03/tcp-echo-server`: **done** (steps 1–6: line protocol `PING`/`ECHO`/`SET`/`GET`, length limit, mutex-guarded shared store, idle timeout, graceful shutdown via `signal.NotifyContext` + `context.AfterFunc` + `WaitGroup`; client with separate reader/writer goroutines). Race-tested, checked by hand.
-- `week03/process-lifecycle`: plan in `days/2026-11-17.md`. Steps 1–5 done (2026-11-19): child in its own process group, made the terminal's foreground group when stdin is a terminal (`golang.org/x/term`). SIGTERM is sent to the child's group, then SIGCONT, then the wrapper waits. stdio passed through. 128+N exit codes, tested. Orphans and zombies seen in `ps`. Step 6 (threads) left. Project code from 2026-11-19 not committed yet.
+- `week03/process-lifecycle`: plan in `days/2026-11-17.md`. Steps 1–5 done (2026-11-19): child in its own process group, made the terminal's foreground group when stdin is a terminal (`golang.org/x/term`). SIGTERM is sent to the child's group, then SIGCONT, then the wrapper waits. stdio passed through. 128+N exit codes, tested. Orphans and zombies seen in `ps`. Step 6 (threads) left. `week03/go.mod`/`go.sum` (x/term) not committed yet.
 
 ## Stuck on
 Nothing blocking. Optional follow-ups for the TCP server are in `days/2026-11-16.md` (helper for the duplicated shutdown notice, client EOF wording, Ctrl+D, untested `EOF` branch). Code follow-ups in `week02/todo-http-api` are still listed in `days/2026-09-30.md`.
