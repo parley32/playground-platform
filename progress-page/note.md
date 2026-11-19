@@ -1,1 +1,1 @@
-Gods be good, I'm about to kick today's booty
+shortest sad story I've ever read -> For sale: baby basket, unused.
