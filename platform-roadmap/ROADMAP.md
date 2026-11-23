@@ -69,7 +69,7 @@ Builds
 ## Phase 3 — Linux and networking (your strength; build on it)
 
 Concepts
-- [ ] Processes, threads, scheduling — _in flight: `week03/process-lifecycle` (steps 1–5 done; threads step left)_
+- [x] Processes, threads, scheduling — `week03/process-lifecycle` (2026-11-23)
 - [ ] Signals, permissions, systemd, logs — _`signal.NotifyContext` for SIGINT/SIGTERM used 2026-11-16; permissions, systemd, logs not covered_
 - [ ] Virtual memory
 - [ ] File descriptors, epoll / I/O models
