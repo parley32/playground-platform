@@ -7,6 +7,7 @@ Entry format: one-line summary · minimal example · common mistakes · "Seen in
 
 ## Linux / OS
 - [Processes, PIDs and parent/child](processes.md)
+- [Stopping a child process: TERM → grace period → KILL](stopping-child-processes.md)
 - [File descriptors and stdin/stdout/stderr](file-descriptors.md)
 
 ## Networking
@@ -23,6 +24,7 @@ Entry format: one-line summary · minimal example · common mistakes · "Seen in
 - [Channels: buffered, unbuffered and closing](channels.md)
 - [context: cancellation and timeouts](context-cancellation.md)
 - [Graceful shutdown (signals, waking blocked reads, WaitGroup)](graceful-shutdown.md)
+- [Goroutines vs OS threads (G/M/P, netpoller, syscalls)](goroutines-vs-os-threads.md)
 
 ## Databases
 _(none yet)_

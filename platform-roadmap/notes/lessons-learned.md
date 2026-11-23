@@ -5,6 +5,13 @@ Format: `YYYY-MM-DD — lesson (link to day file or code if useful)`
 
 ---
 
+- 2026-11-23 — A bounded wait is a `select` between the result channel and a
+  timer, and after the forced stop you wait on the result again (to get the real
+  status and reap the child). Only the sender closes a channel, never the receiver.
+- 2026-11-23 — To test a wrapper's signal handling, signal the wrapper's PID with
+  `kill`. Ctrl+C goes to the terminal's foreground process group, which may be
+  the child and not the wrapper.
+
 - 2026-11-19 — `exec.Cmd` is configuration that `Start()` reads once: set
   `SysProcAttr`, `Stdin`, `Stdout`, `Stderr` and `Env` before it. Setting them
   after has no effect (and is a race). A `nil` `Stdin`/`Stdout`/`Stderr` means

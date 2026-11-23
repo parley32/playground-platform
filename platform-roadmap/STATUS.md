@@ -6,13 +6,13 @@
 
 ## In flight
 - `week03/tcp-echo-server`: **done** (steps 1–6: line protocol `PING`/`ECHO`/`SET`/`GET`, length limit, mutex-guarded shared store, idle timeout, graceful shutdown via `signal.NotifyContext` + `context.AfterFunc` + `WaitGroup`; client with separate reader/writer goroutines). Race-tested, checked by hand.
-- `week03/process-lifecycle`: plan in `days/2026-11-17.md`. Steps 1–5 done (2026-11-19): child in its own process group, made the terminal's foreground group when stdin is a terminal (`golang.org/x/term`). SIGTERM is sent to the child's group, then SIGCONT, then the wrapper waits. stdio passed through. 128+N exit codes, tested. Orphans and zombies seen in `ps`. Step 6 (threads) left. SIGCONT goes to the group and wrapper diagnostics go to stderr (both in `ff531d0`). `go.mod`/`go.sum` committed (`dea98df`).
+- `week03/process-lifecycle`: **done** (2026-11-23). Child in its own process group with the terminal foreground, stdio passed through, TERM + CONT to the group, SIGKILL after a 3 s grace period (`7f071a6`), 128+N exit codes (143/137 tested). Orphans, zombies and the wrapper's threads (`futex`/`do_wait`/`ep_poll`, GOMAXPROCS) observed. Optional: pass on the received signal; a test for the grace period; Ctrl+C can't reach the wrapper while the child has the foreground (design question in `days/2026-11-23.md`).
 
 ## Stuck on
 Nothing blocking. Optional follow-ups for the TCP server are in `days/2026-11-16.md` (helper for the duplicated shutdown notice, client EOF wording, Ctrl+D, untested `EOF` branch). Code follow-ups in `week02/todo-http-api` are still listed in `days/2026-09-30.md`.
 
 ## Next step
-Step 6 of `process-lifecycle`: count the wrapper's threads (`/proc/<pid>/status`, `ps -L`) and explain them, then tick "Processes, threads, scheduling". Remaining follow-ups: SIGKILL after a grace period (a child that ignores TERM hangs the wrapper); optionally forward the received signal instead of always TERM. Afterwards: the "worker pool with graceful shutdown" build.
+Start the "Worker pool with graceful shutdown" build (Phase 3 Builds; also feeds "Concurrency patterns"). First action: create `week03/worker-pool/main.go` with `func worker(ctx context.Context, id int, jobs <-chan int, results chan<- int)`. Plan the steps at session start.
 
 ## Background
 Hours are not tracked (decision 2026-10-06); pace is judged by ticks and day-file dates. No day files before 2026-09-30, see `days/2026-08-19_to_2026-09-25-summary.md`. Second computer: check that `go version` shows 1.27 (PATH order fix, 2026-11-10).

@@ -70,9 +70,9 @@ Builds
 
 Concepts
 - [x] Processes, threads, scheduling — `week03/process-lifecycle` (2026-11-23)
-- [ ] Signals, permissions, systemd, logs — _`signal.NotifyContext` for SIGINT/SIGTERM used 2026-11-16; permissions, systemd, logs not covered_
+- [ ] Signals, permissions, systemd, logs — _signals done: `NotifyContext` (2026-11-16), process groups, forwarding, TERM/CONT/KILL, 128+N (`week03/process-lifecycle`, 2026-11-19/23); permissions, systemd, logs not covered_
 - [ ] Virtual memory
-- [ ] File descriptors, epoll / I/O models
+- [ ] File descriptors, epoll / I/O models — _saw the netpoller in `epoll_wait` (`ep_poll`) and non-blocking sockets, 2026-11-23; not built anything with epoll directly_
 - [ ] cgroups and namespaces (what a container actually is)
 - [ ] TCP vs UDP, sockets — _TCP sockets done via `week03/tcp-echo-server` (2026-11-16); UDP not covered yet_
 - [ ] HTTP, DNS, TLS
