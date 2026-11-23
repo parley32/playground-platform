@@ -1,4 +1,4 @@
-module week03
+module phase3-linux-networking
 
 go 1.26.0
 
