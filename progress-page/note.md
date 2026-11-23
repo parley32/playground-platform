@@ -1,1 +1,1 @@
-shortest sad story I've ever read -> For sale: baby's pyjama, unused.
+'Add a test row with a real child that kills itself'
