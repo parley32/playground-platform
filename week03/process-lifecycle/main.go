@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"golang.org/x/term"
 )
@@ -80,8 +81,20 @@ func run(ctx context.Context) error {
 		if cmdErr != nil && !errors.Is(cmdErr, syscall.ESRCH) {
 			return fmt.Errorf("failed to signal child process: %w", cmdErr)
 		}
-		if statusErr := <-status; statusErr != nil {
-			return fmt.Errorf("child exit with error: %w", statusErr)
+
+		select {
+		case <-time.After(3 * time.Second):
+			cmdErr := syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+			if cmdErr != nil && !errors.Is(cmdErr, syscall.ESRCH) {
+				return fmt.Errorf("failed to kill child process: %w", cmdErr)
+			}
+			if statusErr := <-status; statusErr != nil {
+				return fmt.Errorf("child exit with error: %w", statusErr)
+			}
+		case statusErr := <-status:
+			if statusErr != nil {
+				return fmt.Errorf("child exit with error: %w", statusErr)
+			}
 		}
 	}
 	return nil
