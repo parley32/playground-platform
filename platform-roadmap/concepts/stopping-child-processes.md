@@ -36,5 +36,5 @@ case <-time.After(grace):
   gets SIGINT. Use `kill -TERM <wrapper pid>`.
 
 ## Seen in
-- `week03/process-lifecycle/main.go` (`run`, `7f071a6`)
+- `phase3-linux-networking/process-lifecycle/main.go` (`run`, `7f071a6`)
 - [2026-11-19](../days/2026-11-19.md), [2026-11-23](../days/2026-11-23.md)

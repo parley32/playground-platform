@@ -46,9 +46,9 @@ Concepts
 - [x] `context` (cancellation, timeouts) — _cancellation explained 2026-09-30; `WithTimeout` and `ctx` in HTTP calls not covered yet_
 
 Builds
-- [x] A CLI tool (flags, stdin/stdout, exit codes) — `week01/todo-cli`
-- [x] Concurrent downloader (worker goroutines, cancellation, errors) — `week02/concurrent-url-checker`
-- [x] Small HTTP API with tests — `week02/todo-http-api`
+- [x] A CLI tool (flags, stdin/stdout, exit codes) — `phase1-go-fluency/todo-cli`
+- [x] Concurrent downloader (worker goroutines, cancellation, errors) — `phase1-go-fluency/concurrent-url-checker`
+- [x] Small HTTP API with tests — `phase1-go-fluency/todo-http-api`
 
 **Understanding pass:** before Phase 2, explain each unticked concept above
 without notes. The agent writes the `concepts/` entry from your explanation.
@@ -69,12 +69,12 @@ Builds
 ## Phase 3 — Linux and networking (your strength; build on it)
 
 Concepts
-- [x] Processes, threads, scheduling — `week03/process-lifecycle` (2026-11-23)
-- [ ] Signals, permissions, systemd, logs — _signals done: `NotifyContext` (2026-11-16), process groups, forwarding, TERM/CONT/KILL, 128+N (`week03/process-lifecycle`, 2026-11-19/23); permissions, systemd, logs not covered_
+- [x] Processes, threads, scheduling — `phase3-linux-networking/process-lifecycle` (2026-11-23)
+- [ ] Signals, permissions, systemd, logs — _signals done: `NotifyContext` (2026-11-16), process groups, forwarding, TERM/CONT/KILL, 128+N (`phase3-linux-networking/process-lifecycle`, 2026-11-19/23); permissions, systemd, logs not covered_
 - [ ] Virtual memory
 - [ ] File descriptors, epoll / I/O models — _saw the netpoller in `epoll_wait` (`ep_poll`) and non-blocking sockets, 2026-11-23; not built anything with epoll directly_
 - [ ] cgroups and namespaces (what a container actually is)
-- [ ] TCP vs UDP, sockets — _TCP sockets done via `week03/tcp-echo-server` (2026-11-16); UDP not covered yet_
+- [ ] TCP vs UDP, sockets — _TCP sockets done via `phase3-linux-networking/tcp-echo-server` (2026-11-16); UDP not covered yet_
 - [ ] HTTP, DNS, TLS
 - [ ] Load balancing and proxying
 - [ ] Concurrency patterns (pipelines, fan-in/out, worker pools)
@@ -83,7 +83,7 @@ Concepts
 
 Builds
 - [ ] Worker pool with graceful shutdown
-- [x] TCP server beyond echo (framing, concurrency, timeouts) — `week03/tcp-echo-server`, done 2026-11-16 (line protocol + length limit, shared store, idle timeout, graceful shutdown, race-tested)
+- [x] TCP server beyond echo (framing, concurrency, timeouts) — `phase3-linux-networking/tcp-echo-server`, done 2026-11-16 (line protocol + length limit, shared store, idle timeout, graceful shutdown, race-tested)
 - [ ] Rate limiter (token bucket or similar), benchmarked
 - [ ] A tiny container runtime using namespaces and cgroups (Go)
 

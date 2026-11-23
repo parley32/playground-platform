@@ -5,6 +5,8 @@ agent's instructions live in `platform-roadmap/CLAUDE.md` — read that file
 first and follow it for every session in this repo, regardless of which
 folder the session was launched from.
 
-Project code lives in `week01/`, `week02/`, `week03/`, ...; tracking files
+Project code lives in one folder per roadmap phase (`phase1-go-fluency/`,
+`phase3-linux-networking/`, ...), each with its own `go.mod`. New
+mini-programs go in the folder of the current phase; tracking files
 (`STATUS.md`, `ROADMAP.md`, `days/`, `concepts/`, `notes/`) live in
 `platform-roadmap/`.

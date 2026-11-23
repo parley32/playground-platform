@@ -62,6 +62,6 @@ Embedding (structs and interfaces), type assertions and type switches, the
 nil-interface gotcha.
 
 ## Seen in
-- `week02/todo-http-api` (`TaskService`, `Store`, `mockTaskService` in `handler_test.go`)
-- `week01/shapes`
+- `phase1-go-fluency/todo-http-api` (`TaskService`, `Store`, `mockTaskService` in `handler_test.go`)
+- `phase1-go-fluency/shapes`
 - [2026-09-30 day log](../days/2026-09-30.md)

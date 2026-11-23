@@ -35,5 +35,5 @@ goroutine blocked in a syscall holds a whole OS thread.
   Each one costs a thread (the default limit is 10,000, then the program crashes).
 
 ## Seen in
-- `week03/process-lifecycle` (the `cmd.Wait()` thread in `do_wait`)
+- `phase3-linux-networking/process-lifecycle` (the `cmd.Wait()` thread in `do_wait`)
 - [2026-11-23 day log](../days/2026-11-23.md)

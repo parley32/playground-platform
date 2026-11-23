@@ -39,5 +39,5 @@ if ctx.Err() != nil { /* send notice, return */ }
 Stopping *another* process (TERM → grace → KILL): see [stopping-child-processes](stopping-child-processes.md).
 
 ## Seen in
-- `week03/tcp-echo-server/server` (`serve`, `handleConn`, `TestGracefulShutdown`)
+- `phase3-linux-networking/tcp-echo-server/server` (`serve`, `handleConn`, `TestGracefulShutdown`)
 - [2026-11-16 day log](../days/2026-11-16.md)

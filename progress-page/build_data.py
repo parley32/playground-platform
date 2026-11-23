@@ -22,7 +22,7 @@ MAX_COMMITS = 300  # enough for "today" counts and streaks
 TRACK_FROM = datetime(2026, 11, 16, tzinfo=ZoneInfo("Europe/Paris"))
 
 DATE = re.compile(r"\s*\(?\b\d{4}-\d{2}-\d{2}\b\)?")
-WEEK_DIR = re.compile(r"\bweek\d+/")
+WEEK_DIR = re.compile(r"\b(?:week\d+|phase\d+-[a-z0-9-]+)/")  # code folders: old weekNN/, now phaseN-name/
 
 
 def clean(text):
@@ -30,6 +30,7 @@ def clean(text):
 
     "explained 2026-09-30; embedding not covered yet" -> "embedding not covered yet"
     "`week01/todo-cli`" -> "`todo-cli`"
+    "`phase3-linux-networking/process-lifecycle`" -> "`process-lifecycle`"
     """
     text = WEEK_DIR.sub("", DATE.sub("", text))
     parts = [p.strip(" ,") for p in text.split(";")]

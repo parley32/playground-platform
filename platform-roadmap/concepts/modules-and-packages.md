@@ -11,7 +11,7 @@ names are visible to other packages, lowercase ones aren't.
 - **Module** — a tree of packages with a `go.mod` at the root. `go.mod` holds the
   module **name** (the import-path prefix), the Go version, and any outside
   dependencies.
-- **Import path** = module name + folder path, e.g. `"week02/todo-http-api/handler"`.
+- **Import path** = module name + folder path, e.g. `"phase1-go-fluency/todo-http-api/handler"`.
 - **Exported vs unexported** — a capital first letter makes *any* identifier
   (function, type, constant, variable, struct field, method) visible outside its
   package. Lowercase is package-private.
@@ -25,9 +25,9 @@ names are visible to other packages, lowercase ones aren't.
 
 ## Minimal example
 ```
-week02/                 module week02   (go.mod)
+phase1-go-fluency/     module phase1-go-fluency   (go.mod)
   todo-http-api/        package main
-    handler/            package handler  -> import "week02/todo-http-api/handler"
+    handler/            package handler  -> import "phase1-go-fluency/todo-http-api/handler"
 ```
 ```go
 package handler
@@ -49,7 +49,7 @@ Adding dependencies (`go get`, `go.sum`), `internal/` in practice, workspaces
 (`go.work`), versioning/semver.
 
 ## Seen in
-- `week01/go.mod`, `week02/go.mod`, `week03/go.mod` (one module per week)
-- `week02/todo-http-api` (all `package main`)
-- `week03/tcp-echo-server/server` and `client`
+- `phase1-go-fluency/go.mod`, `phase3-linux-networking/go.mod` (one module per phase; `week01` + `week02` were merged into one module on 2026-11-23, which only meant deleting a `go.mod` because nothing imported by module name)
+- `phase1-go-fluency/todo-http-api` (all `package main`)
+- `phase3-linux-networking/tcp-echo-server/server` and `client`
 - [2026-10-06 day log](../days/2026-10-06.md)

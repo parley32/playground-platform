@@ -50,6 +50,6 @@ Custom error types (a struct implementing `error`) used with `errors.As`;
 `errors.Join`; `panic`/`recover`.
 
 ## Seen in
-- `week02/todo-http-api` (`SendError`, sentinels in `handler.go`, wrapping in `tasks.go`)
-- `week01/config-reader`
+- `phase1-go-fluency/todo-http-api` (`SendError`, sentinels in `handler.go`, wrapping in `tasks.go`)
+- `phase1-go-fluency/config-reader`
 - [2026-09-30 day log](../days/2026-09-30.md)

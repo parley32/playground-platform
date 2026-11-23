@@ -52,6 +52,6 @@ fmt.Println(result)
 `sync.RWMutex`, `sync.Once`, `sync/atomic`.
 
 ## Seen in
-- `week02/concurrent-mutex-sum-calculator`
-- `week02/concurrent-channel-sum-calculator` (channel version)
+- `phase1-go-fluency/concurrent-mutex-sum-calculator`
+- `phase1-go-fluency/concurrent-channel-sum-calculator` (channel version)
 - [2026-09-30 day log](../days/2026-09-30.md)

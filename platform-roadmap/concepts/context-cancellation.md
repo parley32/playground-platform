@@ -56,7 +56,7 @@ case <-time.After(100 * time.Millisecond):
 requests, `context.WithValue`.
 
 ## Seen in
-- `week02/worker-pool` (`WithCancel`, `doJob` select)
-- `week02/concurrent-url-checker`
+- `phase1-go-fluency/worker-pool` (`WithCancel`, `doJob` select)
+- `phase1-go-fluency/concurrent-url-checker`
 - [2026-09-30 day log](../days/2026-09-30.md)
-- `week03/tcp-echo-server/server` (`AfterFunc`, `ctx.Err()`), see [graceful shutdown](graceful-shutdown.md), [2026-11-16](../days/2026-11-16.md)
+- `phase3-linux-networking/tcp-echo-server/server` (`AfterFunc`, `ctx.Err()`), see [graceful shutdown](graceful-shutdown.md), [2026-11-16](../days/2026-11-16.md)

@@ -51,4 +51,4 @@ for {
 
 ## Seen in
 - TCP echo server/client demo, 2026-09
-- `week03/tcp-echo-server/server` idle timeout, [2026-10-13](../days/2026-10-13.md)
+- `phase3-linux-networking/tcp-echo-server/server` idle timeout, [2026-10-13](../days/2026-10-13.md)

@@ -66,7 +66,7 @@ nil channels,
 directional channel types in depth (`<-chan`, `chan<-`), fan-in/fan-out patterns.
 
 ## Seen in
-- `week02/concurrent-channel-sum-calculator` (unbuffered, count receives)
-- `week02/worker-pool` (buffered jobs/results, `close(jobs)`, `close(results)` after `wg.Wait()`)
+- `phase1-go-fluency/concurrent-channel-sum-calculator` (unbuffered, count receives)
+- `phase1-go-fluency/worker-pool` (buffered jobs/results, `close(jobs)`, `close(results)` after `wg.Wait()`)
 - [2026-09-30 day log](../days/2026-09-30.md)
-- `week03/tcp-echo-server/client` (reader goroutine → channel, `select`, `defer close`), [2026-11-16](../days/2026-11-16.md)
+- `phase3-linux-networking/tcp-echo-server/client` (reader goroutine → channel, `select`, `defer close`), [2026-11-16](../days/2026-11-16.md)

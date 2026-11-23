@@ -94,6 +94,6 @@ func TestAdd(t *testing.T) {
 golden files.
 
 ## Seen in
-- `week02/todo-http-api` (`tasks_test.go`, `handler_test.go` with `mockTaskService`)
-- `week02/worker-pool`, `week02/concurrent-url-checker`
+- `phase1-go-fluency/todo-http-api` (`tasks_test.go`, `handler_test.go` with `mockTaskService`)
+- `phase1-go-fluency/worker-pool`, `phase1-go-fluency/concurrent-url-checker`
 - [2026-10-06 day log](../days/2026-10-06.md)
