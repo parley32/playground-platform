@@ -5,6 +5,11 @@ Format: `YYYY-MM-DD — lesson (link to day file or code if useful)`
 
 ---
 
+- 2026-11-24 — Cancel only reaches a goroutine that's waiting inside a `select`
+  with a `ctx.Done()` case. A `for range ch` loop blocks outside any select, so
+  for a cancellable worker write `for { select { case <-ctx.Done(): return;
+  case v, ok := <-ch: if !ok { return } ... } }`. Without `ok`, a closed channel
+  hands out zero values forever. ([day](../days/2026-11-24.md))
 - 2026-11-23 — A bounded wait is a `select` between the result channel and a
   timer, and after the forced stop you wait on the result again (to get the real
   status and reap the child). Only the sender closes a channel, never the receiver.
