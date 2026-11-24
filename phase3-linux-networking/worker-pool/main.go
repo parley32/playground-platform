@@ -69,11 +69,14 @@ func run(input []string, output io.Writer) error {
 
 func getReadyForWork(ctx context.Context, jobs <-chan int, results chan int) {
 
-	for j := range jobs {
+	for {
 		select {
 		case <-ctx.Done():
 			return
-		default:
+		case j, ok := <-jobs:
+			if !ok {
+				return
+			}
 			doJob(ctx, j, results)
 		}
 	}
