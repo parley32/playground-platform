@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strconv"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -30,7 +32,7 @@ func run(input []string, output io.Writer) error {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	results := make(chan int, jobsNumber)
@@ -48,12 +50,6 @@ func run(input []string, output io.Writer) error {
 		jobs <- jobsNumber - j
 	}
 	close(jobs)
-
-	go func() {
-		time.Sleep(500 * time.Millisecond)
-		cancel()
-		fmt.Fprintln(output, "Job terminated")
-	}()
 
 	go func() {
 		wg.Wait()
