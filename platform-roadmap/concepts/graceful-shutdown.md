@@ -8,7 +8,8 @@ for every handler to finish before exiting.
 ## Key points
 - **`signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)`**: the signal
   cancels a context instead of killing the process. Call `stop()` to get default
-  signal handling back, so that a second Ctrl+C kills the process.
+  signal handling back, so that a second Ctrl+C kills the process. The signal
+  is what cancels; the deferred `stop()` is cleanup, not the stop message.
 - **Order:** close the listener (no new connections) → wake every connection →
   `wg.Wait()` → return.
 - **Waking a blocked read:** a `select` on `ctx.Done()` in the loop never runs
@@ -41,3 +42,4 @@ Stopping *another* process (TERM → grace → KILL): see [stopping-child-proces
 ## Seen in
 - `phase3-linux-networking/tcp-echo-server/server` (`serve`, `handleConn`, `TestGracefulShutdown`)
 - [2026-11-16 day log](../days/2026-11-16.md)
+- `phase3-linux-networking/worker-pool` (`run`), [2026-11-25 day log](../days/2026-11-25.md)
